@@ -1,5 +1,5 @@
 body {
-    background-color: #f0f0f0;
+    background-color: #13c2f7;
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
@@ -8,7 +8,7 @@ body {
     padding: 20px;
 }
 canvas {
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: rgb(60, 227, 233);
+    box-shadow: 0 4px 8px rgb(0, 0, 0);
     cursor: crosshair;
 }
