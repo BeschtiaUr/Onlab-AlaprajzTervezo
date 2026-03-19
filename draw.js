@@ -1,7 +1,7 @@
 //Grid
 function drawGrid() {
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#05a9af'; // A szép kék színed
+    ctx.strokeStyle = '#05a9af';
     ctx.beginPath();
     for (let x = 0; x <= canvas.width; x += GRID_SIZE) {
         ctx.moveTo(x, 0);
