@@ -1,4 +1,3 @@
-// --- ESZKÖZTÁR GOMBOK KEZELÉSE ---
 const wallsBtn = document.getElementById('wallsBtn');
 const windowsBtn = document.getElementById('windowsBtn');
 const doorsBtn = document.getElementById('doorsBtn');
@@ -6,13 +5,11 @@ const doorsBtn = document.getElementById('doorsBtn');
 function setActiveTool(toolId, btnElement) {
     currentTool = toolId;
     
-    // Gombok vizuális frissítése (melyik kék)
     wallsBtn.classList.remove('active');
     windowsBtn.classList.remove('active');
     doorsBtn.classList.remove('active');
     btnElement.classList.add('active');
     
-    // Ha eszközt váltunk, megszakítjuk az esetlegesen épp húzott falat
     isDrawing = false;
     currentStartNode = null;
     draggedWallIndex = null;
@@ -20,29 +17,29 @@ function setActiveTool(toolId, btnElement) {
     draw();
 }
 
-// Kattintás események az eszköztár gombjaira
+//Gomb kattintások
 wallsBtn.addEventListener('click', () => setActiveTool('walls', wallsBtn));
 windowsBtn.addEventListener('click', () => setActiveTool('windows', windowsBtn));
 doorsBtn.addEventListener('click', () => setActiveTool('doors', doorsBtn));
 
 
-// --- 1. EGÉR LENYOMÁSA ---
+//EGÉR LENYOMÁSA
 canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; // Csak bal gomb
     let clickPos = getMousePos(e);
 
-    // HA ABLAKOT VAGY AJTÓT RAKUNK LE
+    //Ablak vagy ajtó
     if (currentTool === 'windows' || currentTool === 'doors') {
         if (hoveredWallIndex !== null) {
             const w = walls[hoveredWallIndex];
             const n1 = nodes[w.startNode];
             const n2 = nodes[w.endNode];
             
-            // Matematika: Kiszámoljuk, hány %-nál kattintottunk a falra (0.0 - 1.0)
+            //Kiszámoljuk, hány %-nál kattintottunk a falra
             let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
             let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
             
-            // Levágjuk a széleket, hogy ne lógjon le az ablak a fal végéről
+            //Levágjuk a széleket, hogy ne lógjon le az ablak a fal végéről
             t = Math.max(0.05, Math.min(0.95, t)); 
             
             if (currentTool === 'windows') {
@@ -52,10 +49,9 @@ canvas.addEventListener('mousedown', (e) => {
             }
             draw();
         }
-        return; // Kilépünk, itt nem rajzolunk falat!
+        return;
     }
 
-    // --- INNENTŐL A FAL-RAJZOLÓ MÓD LOGIKÁJA ---
     if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
         clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
@@ -100,11 +96,11 @@ canvas.addEventListener('mousedown', (e) => {
     draw();
 });
 
-// --- 2. EGÉR MOZGATÁSA ---
+//EGÉR MOZGATÁSA
 canvas.addEventListener('mousemove', (e) => {
     mousePosition = getMousePos(e);
     
-    // 1. Fal Hover megkeresése MINDEN eszköznél (hogy a hologram működjön!)
+    //Fal Hover megkeresése MINDEN eszköznél
     let foundHover = null;
     for (let i = 0; i < walls.length; i++) {
         const w = walls[i];
@@ -121,7 +117,7 @@ canvas.addEventListener('mousemove', (e) => {
         draw();
     }
 
-    // 2. Mozgatás és Rajzolás (CSAK FAL MÓDBAN)
+    //Mozgatás és Rajzolás
     if (currentTool === 'walls') {
         if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
             const start = nodes[currentStartNode];
@@ -145,18 +141,17 @@ canvas.addEventListener('mousemove', (e) => {
             draw(); 
         }
     } else {
-        // Ablak/Ajtó módban is újra kell rajzolni mozgáskor az átlátszó hologram miatt!
         draw();
     }
 });
 
-// --- 3. EGÉR ELENGEDÉSE ---
+//EGÉR ELENGEDÉSE
 window.addEventListener('mouseup', () => {
     draggedWallIndex = null; 
     draw(); 
 });
 
-// --- 4. JOBB KLIKK MEGSZAKÍTÁS ---
+//JOBB KLIKK MEGSZAKÍTÁS
 canvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     isDrawing = false;
@@ -165,7 +160,7 @@ canvas.addEventListener('contextmenu', (e) => {
     draw();
 });
 
-// --- 5. TÖRLÉS BILLENTYŰZETTEL ---
+//TÖRLÉS BILLENTYŰZETTEL
 window.addEventListener('keydown', (e) => {
     if ((e.key === 'Delete' || e.key === 'Backspace') && hoveredWallIndex !== null && currentTool === 'walls') {
         
@@ -174,7 +169,7 @@ window.addEventListener('keydown', (e) => {
         hoveredWallIndex = null;
         cleanUpNodes(); 
         
-        // Biztonsági takarítás: Töröljük a falhoz tartozó ablakokat/ajtókat is!
+        //Töröljük a falhoz tartozó ablakokat/ajtókat is
         windows = windows.filter(w => w.wallIndex !== deletedIndex);
         doors = doors.filter(d => d.wallIndex !== deletedIndex);
         
@@ -186,7 +181,7 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// --- EGYÉB GOMBOK ---
+//EGYÉB GOMBOK
 const clearBtn = document.getElementById('clearBtn');
 clearBtn.addEventListener('click', () => {        
     nodes.length = 0; 
@@ -212,5 +207,5 @@ ninetyDegreeBtn.addEventListener('click', () => {
     }
 });
 
-// --- PROGRAM INDÍTÁSA ---
+//PROGRAM INDÍTÁSA
 draw();

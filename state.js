@@ -1,16 +1,12 @@
 const canvas = document.getElementById('floorplan');
 const ctx = canvas.getContext('2d');
 
-// --- ADATOK (Ez kerül majd a Firebase-be) ---
 let nodes = []; // Csomópontok {x, y}
 let walls = []; // Falak {startNode, endNode}
 
-// ÚJ ADATOK:
-let windows = []; // Ablakok { wallIndex: number, position: number (0-1), length: number }
-let doors = []; // Ajtók { wallIndex: number, position: number (0-1), length: number }
+let windows = [];
+let doors = [];
 
-// --- AKTUÁLIS ÁLLAPOT (Csak a böngészőben kell) ---
-// ÚJ: Az aktuálisan kijelölt eszköz ("walls", "windows", "doors")
 let currentTool = "walls"; 
 
 let isDrawing = false;

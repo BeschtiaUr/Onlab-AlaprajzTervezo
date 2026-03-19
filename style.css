@@ -4,23 +4,19 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    /* KIVETTÜK a center-eket, így balra fog igazodni! */
     height: 100vh;
-    width: 100vw; /* Teljes képernyő szélesség */
+    width: 100vw;
     overflow: hidden;
 }
 
-/* Fő tároló */
 .main-wrapper {
     display: flex;
     flex-direction: row; 
     width: 100%;
     height: 100%;
     background-color: white;
-    /* A lekerekítést is levehetjük, ha a szélekhez ér */
 }
 
-/* Eszköztár (Bal oldal) */
 .toolbar {
     width: 250px;
     background-color: #537D96;
@@ -29,8 +25,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    box-sizing: border-box; /* Ez fontos, hogy a padding ne növelje a 250px-es szélességet */
-    box-shadow: 2px 0 10px rgba(0,0,0,0.2); /* Egy kis árnyék jobbra, hogy leváljon a vászonról */
+    box-sizing: border-box;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     z-index: 10;
 }
 
@@ -40,7 +36,6 @@ body {
     padding-bottom: 10px;
 }
 
-/* Eszköz gombok stílusa */
 .tool-btn {
     padding: 12px 15px;
     background-color: #34495e;
@@ -57,22 +52,19 @@ body {
     background-color: #037598;
 }
 
-/* Kijelölt eszköz stílusa */
 .tool-btn.active {
-    background-color: #05a9af; /* A kék színünk */
+    background-color: #05a9af;
     font-weight: bold;
 }
 
-/* Elválasztó vonal */
 .separator {
     height: 2px;
     background-color: #44A194;
     margin: 10px 0;
 }
 
-/* Egyéb gombok (vásznon kívüliek) */
 .clear-btn {
-    margin-top: auto; /* Alulra tolja */
+    margin-top: auto;
     padding: 10px 15px;
     background-color: #ff4444;
     color: white;
@@ -102,14 +94,13 @@ body {
     border-color: #388E3C;
 }
 
-/* Rajzvászon (Jobb oldal) */
 .canvas-container {
-    flex-grow: 1; /* Ez a varázsszó: kitölti a maradék üres helyet a toolbar mellett! */
+    flex-grow: 1;
     position: relative;
     padding: 20px;
     background-color: #44A194;
     display: flex;
-    justify-content: center; /* Középre teszi a canvast ezen a területen belül */
+    justify-content: center;
     align-items: center;
 }
 
