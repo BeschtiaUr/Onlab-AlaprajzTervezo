@@ -20,7 +20,7 @@ body {
 .toolbar {
     width: 250px;
     background-color: #537D96;
-    color: white;
+    color: #F4F0E4;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -39,7 +39,7 @@ body {
 .tool-btn {
     padding: 12px 15px;
     background-color: #34495e;
-    color: rgb(255, 255, 255);
+    color: #F4F0E4;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -49,11 +49,11 @@ body {
 }
 
 .tool-btn:hover {
-    background-color: #037598;
+    background-color: #357c73;
 }
 
 .tool-btn.active {
-    background-color: #05a9af;
+    background-color: #44A194;
     font-weight: bold;
 }
 
@@ -66,7 +66,7 @@ body {
 .clear-btn {
     margin-top: auto;
     padding: 10px 15px;
-    background-color: #ff4444;
+    background-color: #EC8F8D;
     color: white;
     border: none;
     border-radius: 5px;
@@ -80,8 +80,8 @@ body {
 
 .ninety-degree-btn {
     padding: 10px 15px;
-    background-color: #f8f9fa;
-    border: 2px solid #ccc;
+    background-color: #F4F0E4;
+    border: 2px solid #F4F0E4;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
@@ -89,9 +89,9 @@ body {
 }
 
 .ninety-degree-btn.active {
-    background-color: #4CAF50;
-    color: white;
-    border-color: #388E3C;
+    background-color: #44A194;
+    color: #F4F0E4;
+    border-color: #44A194;
 }
 
 .canvas-container {
