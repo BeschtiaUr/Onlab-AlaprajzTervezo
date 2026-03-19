@@ -7,15 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="toolbar">
-        <h2>Toolbar placeholder</h2>
+    <div class="main-wrapper">
+        
+        <div class="toolbar">
+            <h2>Toolbar</h2>
+            <button id="wallsBtn" class="tool-btn active">Walls</button>
+            
+            <button id="windowsBtn" class="tool-btn">Windows</button>
+            <button id="doorsBtn" class="tool-btn">Doors</button>
+            
+            <div class="separator"></div>
+            <button id="ninetyDegreeBtn" class="ninety-degree-btn">90° mode OFF</button>
+            <button id="clearBtn" class="clear-btn">Clear all</button>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="floorplan" width="1000" height="700"></canvas>
+        </div>
     </div>
-    
-    <div class="canvas-container">
-        <canvas id="floorplan" width="1200" height="600"></canvas>
-        <button id="clearBtn" class="clear-btn">Clear all</button>
-        <button id="ninetyDegreeBtn" class="ninety-degree-btn">90° mode</button>
-    </div>
+
     <script src="state.js"></script>
     <script src="helpers.js"></script>
     <script src="draw.js"></script>

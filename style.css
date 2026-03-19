@@ -1,46 +1,92 @@
 body {
-    background-color: #13c2f7;
+    background-color: #f0f0f0;
     font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    /* KIVETTÜK a center-eket, így balra fog igazodni! */
+    height: 100vh;
+    width: 100vw; /* Teljes képernyő szélesség */
+    overflow: hidden;
+}
+
+/* Fő tároló */
+.main-wrapper {
+    display: flex;
+    flex-direction: row; 
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    /* A lekerekítést is levehetjük, ha a szélekhez ér */
+}
+
+/* Eszköztár (Bal oldal) */
+.toolbar {
+    width: 250px;
+    background-color: rgb(9, 227, 227);
+    color: white;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 0;
-    padding: 20px;
-}
-canvas {
-    background-color: rgb(60, 227, 233);
-    box-shadow: 0 4px 8px rgb(0, 0, 0);
-    cursor: crosshair;
+    gap: 15px;
+    box-sizing: border-box; /* Ez fontos, hogy a padding ne növelje a 250px-es szélességet */
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2); /* Egy kis árnyék jobbra, hogy leváljon a vászonról */
+    z-index: 10;
 }
 
-.canvas-container {
-    position: relative; /* Ehhez a dobozhoz képest fog mozogni a gomb */
-    display: inline-block; /* Hogy pontosan felvegye a vászon méretét */
+.toolbar h2 {
+    margin-top: 0;
+    border-bottom: 2px solid rgb(9, 227, 227);
+    padding-bottom: 10px;
 }
 
-/* A törlő gomb kinézete */
+/* Eszköz gombok stílusa */
+.tool-btn {
+    padding: 12px 15px;
+    background-color: #34495e;
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.tool-btn:hover {
+    background-color: #037598;
+}
+
+/* Kijelölt eszköz stílusa */
+.tool-btn.active {
+    background-color: #05a9af; /* A kék színünk */
+    font-weight: bold;
+}
+
+/* Elválasztó vonal */
+.separator {
+    height: 2px;
+    background-color: #0babcf;
+    margin: 10px 0;
+}
+
+/* Egyéb gombok (vásznon kívüliek) */
 .clear-btn {
-    position: absolute; /* Lebegjen a vászon felett */
-    bottom: 20px; /* 20 pixelre az aljától */
-    right: 20px; /* 20 pixelre a jobb szélétől */
+    margin-top: auto; /* Alulra tolja */
     padding: 10px 15px;
-    background-color: #ff4444; /* Piros szín */
+    background-color: #ff4444;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .clear-btn:hover {
-    background-color: #cc0000; /* Sötétebb piros, ha ráviszed az egeret */
+    background-color: #cc0000;
 }
 
-.ninety-degree-btn{
-    position: absolute;
-    top: 20px;
-    left: 20px;
+.ninety-degree-btn {
     padding: 10px 15px;
     background-color: #f8f9fa;
     border: 2px solid #ccc;
@@ -48,11 +94,27 @@ canvas {
     cursor: pointer;
     font-weight: bold;
     color: #333;
-    transition: all 0.2s;
 }
 
 .ninety-degree-btn.active {
     background-color: #4CAF50;
     color: white;
     border-color: #388E3C;
+}
+
+/* Rajzvászon (Jobb oldal) */
+.canvas-container {
+    flex-grow: 1; /* Ez a varázsszó: kitölti a maradék üres helyet a toolbar mellett! */
+    position: relative;
+    padding: 20px;
+    background-color: #0eecd2;
+    display: flex;
+    justify-content: center; /* Középre teszi a canvast ezen a területen belül */
+    align-items: center;
+}
+
+canvas {
+    background-color: rgb(9, 227, 227);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: crosshair;
 }
