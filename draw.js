@@ -27,10 +27,23 @@ function draw() {
         const end = nodes[wall.endNode];
         
         ctx.beginPath();
-        if (index === selectedWallIndex) {
-            ctx.strokeStyle = '#ff4444'; // Piros, ha ki van jelölve
+        walls.forEach((wall, index) => {
+        const start = nodes[wall.startNode];
+        const end = nodes[wall.endNode];
+        
+        ctx.beginPath();
+        // HA MOZGATJUK, LEGYEN KÉK!
+        if (index === draggedWallIndex) {
+            ctx.strokeStyle = '#05a9af'; 
             ctx.lineWidth = 20;
-        } else {
+        } 
+        // HA CSAK FELETTE VAN AZ EGÉR, LEGYEN PIROS!
+        else if (index === hoveredWallIndex) {
+            ctx.strokeStyle = '#ff4444'; 
+            ctx.lineWidth = 20;
+        } 
+        // AMÚGY SIMA FEKETE
+        else {
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 20;
         }
@@ -63,4 +76,5 @@ function draw() {
         ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
         ctx.fill();
     });
-}
+})
+};
