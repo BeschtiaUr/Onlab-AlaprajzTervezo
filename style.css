@@ -12,3 +12,47 @@ canvas {
     box-shadow: 0 4px 8px rgb(0, 0, 0);
     cursor: crosshair;
 }
+
+.canvas-container {
+    position: relative; /* Ehhez a dobozhoz képest fog mozogni a gomb */
+    display: inline-block; /* Hogy pontosan felvegye a vászon méretét */
+}
+
+/* A törlő gomb kinézete */
+.clear-btn {
+    position: absolute; /* Lebegjen a vászon felett */
+    bottom: 20px; /* 20 pixelre az aljától */
+    right: 20px; /* 20 pixelre a jobb szélétől */
+    padding: 10px 15px;
+    background-color: #ff4444; /* Piros szín */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.clear-btn:hover {
+    background-color: #cc0000; /* Sötétebb piros, ha ráviszed az egeret */
+}
+
+.ninety-degree-btn{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.ninety-degree-btn.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #388E3C;
+}

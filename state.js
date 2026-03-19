@@ -7,6 +7,7 @@ let walls = []; // Falak {startNode, endNode}
 
 // --- AKTUÁLIS ÁLLAPOT ---
 let isDrawing = false;
+let isNinetyDegreeMode = false; // ÚJ: 90 fokos mód állapota
 let currentStartNode = null;
 let mousePosition = { x: 0, y: 0 };
 const SNAP_DISTANCE = 15; 

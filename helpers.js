@@ -47,3 +47,17 @@ function getDistanceToLine(px, py, x1, y1, x2, y2) {
     let dx = px - xx; let dy = py - yy;
     return Math.sqrt(dx * dx + dy * dy);
 }
+
+// Megnézi, hogy az egér vízszintesen vagy függőlegesen mozdult-e el jobban a kezdőponthoz képest
+function applyNinetyDegrees(startX, startY, currentX, currentY) {
+    const dx = Math.abs(currentX - startX);
+    const dy = Math.abs(currentY - startY);
+    
+    if (dx > dy) {
+        // Vízszintes vonal (Az Y koordinátát rögzítjük a kezdőponthoz)
+        return { x: currentX, y: startY }; 
+    } else {
+        // Függőleges vonal (Az X koordinátát rögzítjük a kezdőponthoz)
+        return { x: startX, y: currentY }; 
+    }
+}

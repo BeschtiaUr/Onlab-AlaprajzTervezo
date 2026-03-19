@@ -1,7 +1,14 @@
 // 1. Egér lenyomása
 canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; // Csak a bal gomb!
-    const clickPos = getMousePos(e);
+    let clickPos = getMousePos(e);
+
+    // JAVÍTVA: isNinetyDegreeMode és applyNinetyDegrees
+    if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
+        const start = nodes[currentStartNode];
+        clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
+    }
+
     const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
 
     if (!isDrawing) {
@@ -56,6 +63,12 @@ canvas.addEventListener('mousedown', (e) => {
 canvas.addEventListener('mousemove', (e) => {
     mousePosition = getMousePos(e);
     
+    // JAVÍTVA: isNinetyDegreeMode és applyNinetyDegrees
+    if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
+        const start = nodes[currentStartNode];
+        mousePosition = applyNinetyDegrees(start.x, start.y, mousePosition.x, mousePosition.y);
+    }
+    
     if (draggedNodeIndex !== null) {
         nodes[draggedNodeIndex].x = mousePosition.x;
         nodes[draggedNodeIndex].y = mousePosition.y;
@@ -79,13 +92,40 @@ canvas.addEventListener('contextmenu', (e) => {
     draw();
 });
 
-// 5. Törlés
+// 5. Törlés billentyűzettel
 window.addEventListener('keydown', (e) => {
     if ((e.key === 'Delete' || e.key === 'Backspace') && selectedWallIndex !== null) {
         walls.splice(selectedWallIndex, 1); 
         selectedWallIndex = null;
         cleanUpNodes(); 
         draw();
+    }
+});
+
+// --- MINDENT TÖRÖL GOMB ---
+const clearBtn = document.getElementById('clearBtn');
+clearBtn.addEventListener('click', () => {        
+    nodes.length = 0; 
+    walls.length = 0;
+    isDrawing = false;
+    currentStartNode = null;
+    draggedNodeIndex = null;
+    selectedWallIndex = null;
+    draw();
+});
+
+// --- 90 FOKOS MÓD GOMB ---
+const ninetyDegreeBtn = document.getElementById('ninetyDegreeBtn');
+ninetyDegreeBtn.addEventListener('click', () => {
+    
+    isNinetyDegreeMode = !isNinetyDegreeMode; 
+    
+    if (isNinetyDegreeMode) {
+        ninetyDegreeBtn.classList.add('active'); 
+        ninetyDegreeBtn.innerText = "90° mode: ON";
+    } else {
+        ninetyDegreeBtn.classList.remove('active'); 
+        ninetyDegreeBtn.innerText = "90° mode";
     }
 });
 

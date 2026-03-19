@@ -29,10 +29,10 @@ function draw() {
         ctx.beginPath();
         if (index === selectedWallIndex) {
             ctx.strokeStyle = '#ff4444'; // Piros, ha ki van jelölve
-            ctx.lineWidth = 7;
+            ctx.lineWidth = 20;
         } else {
             ctx.strokeStyle = '#333';
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 20;
         }
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
@@ -42,7 +42,7 @@ function draw() {
     // 2. Épp húzott (ideiglenes) fal
     if (isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 20;
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.4)'; 
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
