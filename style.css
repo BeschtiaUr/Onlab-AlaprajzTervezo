@@ -30,6 +30,9 @@ body {
     z-index: 10;
 }
 
+.left-toolbar { box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+.right-toolbar { box-shadow: -2px 0 10px rgba(0,0,0,0.2); }
+
 .toolbar h2 {
     margin-top: 0;
     border-bottom: 2px solid #44A194;

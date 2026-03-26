@@ -1,13 +1,18 @@
 const wallsBtn = document.getElementById('wallsBtn');
 const windowsBtn = document.getElementById('windowsBtn');
 const doorsBtn = document.getElementById('doorsBtn');
+const furnitureBtns = document.querySelectorAll('.furniture-btn'); // Az összes bútor gomb
 
-function setActiveTool(toolId, btnElement) {
+function setActiveTool(toolId, btnElement, extraType = null) {
     currentTool = toolId;
+    selectedFurnitureType = extraType; // Megjegyezzük, melyik bútor
     
+    // Gombok vizuális frissítése
     wallsBtn.classList.remove('active');
     windowsBtn.classList.remove('active');
     doorsBtn.classList.remove('active');
+    furnitureBtns.forEach(btn => btn.classList.remove('active'));
+    
     btnElement.classList.add('active');
     
     isDrawing = false;
@@ -17,10 +22,18 @@ function setActiveTool(toolId, btnElement) {
     draw();
 }
 
-//Gomb kattintások
+// Bal oldali gombok
 wallsBtn.addEventListener('click', () => setActiveTool('walls', wallsBtn));
 windowsBtn.addEventListener('click', () => setActiveTool('windows', windowsBtn));
 doorsBtn.addEventListener('click', () => setActiveTool('doors', doorsBtn));
+
+// Jobb oldali (bútor) gombok
+furnitureBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // A data-type alapján tudjuk, melyik bútor lett megnyomva
+        setActiveTool('furniture', btn, btn.dataset.type);
+    });
+});
 
 
 //EGÉR LENYOMÁSA
@@ -28,6 +41,17 @@ canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; // Csak bal gomb
     let clickPos = getMousePos(e);
 
+    // ÚJ: HA BÚTORT RAKUNK LE
+    if (currentTool === 'furniture') {
+        furnitures.push({
+            type: selectedFurnitureType,
+            x: clickPos.x,
+            y: clickPos.y,
+            angle: 0 // Később ezt lehet majd gombbal forgatni!
+        });
+        draw();
+        return; // Kilépünk, ne csináljon mást!
+    }
     //Ablak vagy ajtó
     if (currentTool === 'windows' || currentTool === 'doors') {
         if (hoveredWallIndex !== null) {

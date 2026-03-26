@@ -83,6 +83,48 @@ function drawDoor(x, y, angle, length) {
     ctx.restore();
 }
 
+// --- ÚJ: BÚTOROK RAJZOLÁSA ---
+function drawFurnitureItem(x, y, type, angle, isHover = false) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+
+    ctx.globalAlpha = isHover ? 0.5 : 1.0; // Ha csak előnézet, legyen átlátszó
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#333';
+
+    if (type === 'bed') {
+        // Franciaágy
+        ctx.fillStyle = '#f1c40f'; // Sárga takaró
+        ctx.fillRect(-40, -50, 80, 100);
+        ctx.fillStyle = '#fff'; // Párnák
+        ctx.fillRect(-35, -45, 30, 20);
+        ctx.fillRect(5, -45, 30, 20);
+        ctx.strokeRect(-40, -50, 80, 100);
+    } 
+    else if (type === 'sofa') {
+        // Kanapé
+        ctx.fillStyle = '#e74c3c'; // Piros ülőke
+        ctx.fillRect(-50, -25, 100, 50); 
+        ctx.fillStyle = '#c0392b'; // Háttámla és karfa
+        ctx.fillRect(-50, -25, 100, 15); // Háttámla
+        ctx.fillRect(-50, -10, 20, 35); // Bal karfa
+        ctx.fillRect(30, -10, 20, 35); // Jobb karfa
+        ctx.strokeRect(-50, -25, 100, 50);
+    } 
+    else if (type === 'table') {
+        // Étkezőasztal székekkel
+        ctx.fillStyle = '#8e44ad'; // Székek
+        ctx.beginPath(); ctx.arc(-30, 0, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(30, 0, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#ecf0f1'; // Asztallap
+        ctx.fillRect(-20, -40, 40, 80);
+        ctx.strokeRect(-20, -40, 40, 80);
+    }
+
+    ctx.restore();
+}
+
 
 //FŐ RAJZOLÓ FÜGGVÉNY
 function draw() {
@@ -164,6 +206,23 @@ function draw() {
              ctx.lineTo(mousePosition.x, mousePosition.y);
         }
         ctx.stroke();
+    }
+
+    furnitures.forEach((f, index) => {
+        // Kijelölés vizualizálása (Piros keret, ha felette az egér)
+        if (index === hoveredFurnitureIndex || index === draggedFurnitureIndex) {
+            ctx.shadowColor = '#ff4444';
+            ctx.shadowBlur = 15;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+        drawFurnitureItem(f.x, f.y, f.type, f.angle);
+        ctx.shadowBlur = 0; // Reset
+    });
+
+    // 6. BÚTOR ELŐNÉZET (Hover)
+    if (currentTool === 'furniture' && selectedFurnitureType) {
+        drawFurnitureItem(mousePosition.x, mousePosition.y, selectedFurnitureType, 0, true);
     }
 
     //PIROS CSOMÓPONTOK
