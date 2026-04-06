@@ -41,7 +41,6 @@ canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; // Csak bal gomb
     let clickPos = getMousePos(e);
 
-    // ÚJ: HA BÚTORT RAKUNK LE
     if (currentTool === 'furniture') {
         furnitures.push({
             type: selectedFurnitureType,
@@ -50,7 +49,7 @@ canvas.addEventListener('mousedown', (e) => {
             angle: 0 // Később ezt lehet majd gombbal forgatni!
         });
         draw();
-        return; // Kilépünk, ne csináljon mást!
+        return;
     }
     //Ablak vagy ajtó
     if (currentTool === 'windows' || currentTool === 'doors') {
@@ -120,11 +119,11 @@ canvas.addEventListener('mousedown', (e) => {
     draw();
 });
 
-//EGÉR MOZGATÁSA
+// EGÉR MOZGATÁSA
 canvas.addEventListener('mousemove', (e) => {
     mousePosition = getMousePos(e);
     
-    //Fal Hover megkeresése MINDEN eszköznél
+    // 1. Fal Hover megkeresése
     let foundHover = null;
     for (let i = 0; i < walls.length; i++) {
         const w = walls[i];
@@ -136,12 +135,25 @@ canvas.addEventListener('mousemove', (e) => {
         }
     }
     
-    if (hoveredWallIndex !== foundHover) {
+    // 2. Bútor Hover megkeresése
+    let foundFurnitureHover = null;
+    for (let i = 0; i < furnitures.length; i++) {
+        const f = furnitures[i];
+        const dist = Math.sqrt(Math.pow(mousePosition.x - f.x, 2) + Math.pow(mousePosition.y - f.y, 2));
+        if (dist < 40) { // 40 pixel sugarú körben érzékeli az egeret
+            foundFurnitureHover = i;
+            break;
+        }
+    }
+    
+    // Csak akkor rajzolunk újra, ha valaminek a kijelölése megváltozott
+    if (hoveredWallIndex !== foundHover || hoveredFurnitureIndex !== foundFurnitureHover) {
         hoveredWallIndex = foundHover;
+        hoveredFurnitureIndex = foundFurnitureHover;
         draw();
     }
 
-    //Mozgatás és Rajzolás
+    // Mozgatás és Rajzolás
     if (currentTool === 'walls') {
         if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
             const start = nodes[currentStartNode];
@@ -167,6 +179,9 @@ canvas.addEventListener('mousemove', (e) => {
     } else {
         draw();
     }
+    
+    // MINDIG frissítjük az adatokat, ha mozog az egér
+    updateDataBar();
 });
 
 //EGÉR ELENGEDÉSE
@@ -208,14 +223,25 @@ window.addEventListener('keydown', (e) => {
 //EGYÉB GOMBOK
 const clearBtn = document.getElementById('clearBtn');
 clearBtn.addEventListener('click', () => {        
+    // Kiürítjük az összes adatot tároló listát
     nodes.length = 0; 
     walls.length = 0;
-    windows.length = 0; // Ablakokat is ürítjük
-    doors.length = 0;   // Ajtókat is ürítjük
+    windows.length = 0; 
+    doors.length = 0;   
+    furnitures.length = 0;
+    
+    // Alaphelyzetbe állítjuk az állapotokat
     isDrawing = false;
     currentStartNode = null;
     draggedWallIndex = null;
     hoveredWallIndex = null;
+    
+    // Bútoros állapotok alaphelyzetbe állítása
+    hoveredFurnitureIndex = null;
+    draggedFurnitureIndex = null;
+    selectedFurnitureType = null;
+    
+    // Újrarajzoljuk a vásznat
     draw();
 });
 
@@ -230,6 +256,44 @@ ninetyDegreeBtn.addEventListener('click', () => {
         ninetyDegreeBtn.innerText = "90°mode OFF";
     }
 });
+
+// --- ADATSÁV FRISSÍTÉSE ---
+function updateDataBar() {
+    const infoType = document.getElementById('infoType');
+    const infoSize = document.getElementById('infoSize');
+    if (!infoType || !infoSize) return;
+
+    if (hoveredWallIndex !== null) {
+        // Ha egy fal felett van az egér, kiszámoljuk a hosszát
+        const wall = walls[hoveredWallIndex];
+        const n1 = nodes[wall.startNode];
+        const n2 = nodes[wall.endNode];
+        const dx = n2.x - n1.x;
+        const dy = n2.y - n1.y;
+        const length = Math.sqrt(dx * dx + dy * dy).toFixed(1);
+        
+        infoType.innerText = "Wall";
+        infoSize.innerText = length + " px";
+    } 
+    else if (hoveredFurnitureIndex !== null) {
+        // Ha egy bútor felett van az egér
+        const f = furnitures[hoveredFurnitureIndex];
+        let typeName = "";
+        let size = "";
+        
+        if (f.type === 'bed') { typeName = "Bed"; size = "80 x 100 px"; }
+        else if (f.type === 'sofa') { typeName = "Sofa"; size = "100 x 50 px"; }
+        else if (f.type === 'table') { typeName = "Table"; size = "40 x 80 px"; }
+        
+        infoType.innerText = typeName;
+        infoSize.innerText = size;
+    } 
+    else {
+        // Semmi nincs kijelölve
+        infoType.innerText = "-";
+        infoSize.innerText = "-";
+    }
+}
 
 //PROGRAM INDÍTÁSA
 draw();

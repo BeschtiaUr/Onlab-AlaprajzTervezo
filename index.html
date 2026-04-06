@@ -24,12 +24,24 @@
         <div class="canvas-container">
             <canvas id="floorplan" width="1000" height="700"></canvas>
         </div>
-        <div class="toolbar right-toolbar">
-            <h2>Furniture</h2>
-            <button class="tool-btn furniture-btn" data-type="bed">Bed</button>
-            <button class="tool-btn furniture-btn" data-type="sofa">Sofa</button>
-            <button class="tool-btn furniture-btn" data-type="table">Table</button>
-        </div>
+        <div class="right-sidebar">
+            
+            <div class="toolbar right-widget">
+                <h2>Furniture</h2>
+                <button class="tool-btn furniture-btn" data-type="bed">Bed</button>
+                <button class="tool-btn furniture-btn" data-type="sofa">Sofa</button>
+                <button class="tool-btn furniture-btn" data-type="table">Table</button>
+            </div>
+            
+            <div class="toolbar properties-widget">
+                <h2>Properties</h2>
+                <div class="databar">
+                    <p>Selected: <span id="infoType">-</span></p>
+                    <p>Size: <span id="infoSize">-</span></p>
+                </div>
+            </div>
+
+        </div> 
     </div>
 
     <script src="state.js"></script>

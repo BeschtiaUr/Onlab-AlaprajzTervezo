@@ -31,7 +31,10 @@ body {
 }
 
 .left-toolbar { box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
-.right-toolbar { box-shadow: -2px 0 10px rgba(0,0,0,0.2); }
+.right-toolbar {
+     box-shadow: -2px 0 10px rgba(0,0,0,0.2); 
+     height: 50%;
+}
 
 .toolbar h2 {
     margin-top: 0;
@@ -57,6 +60,48 @@ body {
 
 .tool-btn.active {
     background-color: #44A194;
+    font-weight: bold;
+}
+
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 260px; /* Egy picit szélesebb, hogy elférjen benne a doboz */
+    height: 100%;
+    background-color: #44A194; /* Megegyezik a canvas-container színével! */
+    padding: 20px 20px 20px 0; /* Fent, jobbra, lent van távolság, balra (a vászon felé) nincs */
+    box-sizing: border-box;
+    gap: 20px; /* Űr a lebegő dobozok között */
+}
+
+.right-sidebar .toolbar {
+    width: 100%; /* Kitöltik a rendelkezésre álló helyet */
+    border-radius: 8px; /* Lekerekített sarkok a lebegő hatásért */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Árnyék minden oldalra */
+}
+
+.properties-widget {
+    margin-top: auto;
+}
+
+.databar {
+    background-color: #357c73;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #F4F0E4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.databar p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.databar span {
     font-weight: bold;
 }
 

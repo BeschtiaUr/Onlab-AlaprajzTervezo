@@ -113,10 +113,6 @@ function drawFurnitureItem(x, y, type, angle, isHover = false) {
         ctx.strokeRect(-50, -25, 100, 50);
     } 
     else if (type === 'table') {
-        // Étkezőasztal székekkel
-        ctx.fillStyle = '#8e44ad'; // Székek
-        ctx.beginPath(); ctx.arc(-30, 0, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(30, 0, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#ecf0f1'; // Asztallap
         ctx.fillRect(-20, -40, 40, 80);
         ctx.strokeRect(-20, -40, 40, 80);
@@ -234,4 +230,5 @@ function draw() {
             ctx.fill();
         });
     }
+    if (typeof updateDataBar === 'function') updateDataBar();
 }
