@@ -83,7 +83,7 @@ function drawDoor(x, y, angle, length) {
     ctx.restore();
 }
 
-// --- ÚJ: BÚTOROK RAJZOLÁSA ---
+// ---  BÚTOROK RAJZOLÁSA ---
 function drawFurnitureItem(x, y, type, angle, isHover = false) {
     ctx.save();
     ctx.translate(x, y);
@@ -218,7 +218,7 @@ function draw() {
 
     // 6. BÚTOR ELŐNÉZET (Hover)
     if (currentTool === 'furniture' && selectedFurnitureType) {
-        drawFurnitureItem(mousePosition.x, mousePosition.y, selectedFurnitureType, 0, true);
+        drawFurnitureItem(mousePosition.x, mousePosition.y, selectedFurnitureType, currentFurnitureAngle, true);
     }
 
     //PIROS CSOMÓPONTOK

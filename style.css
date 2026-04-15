@@ -157,3 +157,56 @@ canvas {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     cursor: crosshair;
 }
+
+/* --- LOGIN SCREEN STYLES --- */
+.login-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #44A194; /* Matches your theme */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.login-box {
+    background-color: #2c3e50;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    width: 300px;
+    color: #F4F0E4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-box h2 {
+    margin: 0;
+    text-align: center;
+    color: #44A194;
+}
+
+.login-box p {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.login-box input {
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #F4F0E4;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+}
+
+.login-box input:focus {
+    border: 2px solid #44A194;
+}

@@ -25,3 +25,5 @@ let selectedFurnitureType = null; // Milyen bútort választottunk a jobb menüb
 
 let hoveredFurnitureIndex = null; // Törléshez/Mozgatáshoz
 let draggedFurnitureIndex = null; // Mozgatáshoz
+
+let currentFurnitureAngle = 0; // A kezedben lévő bútor aktuális forgatási szöge

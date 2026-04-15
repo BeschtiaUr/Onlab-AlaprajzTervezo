@@ -5,27 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alaprajz Tervező MVP</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <div class="main-wrapper">
+
+    <div id="login-screen" class="login-wrapper">
+        <div class="login-box">
+            <h2>Welcome</h2>
+            <p>Please log in to design your floor plan.</p>
+            
+            <input type="email" id="emailInput" placeholder="Email address">
+            <input type="password" id="passwordInput" placeholder="Password">
+            
+            <p id="authError" style="color: #ff4444; font-size: 14px; display: none;"></p>
+            
+            <button id="loginBtn" class="tool-btn active" style="width: 100%; text-align: center; margin-top: 10px;">Login</button>
+            <button id="registerBtn" class="tool-btn" style="width: 100%; text-align: center; margin-top: 10px;">Create Account</button>
+        </div>
+    </div>
+
+    <div class="main-wrapper" id="main-app" style="display: none;">
         
-        <div class="toolbar">
+        <div class="toolbar left-toolbar">
             <h2>Toolbar</h2>
             <button id="wallsBtn" class="tool-btn active">Walls</button>
-            
             <button id="windowsBtn" class="tool-btn">Windows</button>
             <button id="doorsBtn" class="tool-btn">Doors</button>
             
             <div class="separator"></div>
             <button id="ninetyDegreeBtn" class="ninety-degree-btn">90° mode OFF</button>
             <button id="clearBtn" class="clear-btn">Clear all</button>
+            
+            <button id="logoutBtn" class="clear-btn" style="background-color: #34495e; margin-top: 10px;">🚪 Logout</button>
         </div>
         
         <div class="canvas-container">
             <canvas id="floorplan" width="1000" height="700"></canvas>
         </div>
+
         <div class="right-sidebar">
-            
             <div class="toolbar right-widget">
                 <h2>Furniture</h2>
                 <button class="tool-btn furniture-btn" data-type="bed">Bed</button>
@@ -40,11 +60,10 @@
                     <p>Size: <span id="infoSize">-</span></p>
                 </div>
             </div>
-
         </div> 
     </div>
 
-    <script src="state.js"></script>
+    <script src="auth.js"></script> <script src="state.js"></script>
     <script src="helpers.js"></script>
     <script src="draw.js"></script>
     <script src="events.js"></script>

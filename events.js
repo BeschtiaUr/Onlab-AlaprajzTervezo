@@ -1,13 +1,12 @@
 const wallsBtn = document.getElementById('wallsBtn');
 const windowsBtn = document.getElementById('windowsBtn');
 const doorsBtn = document.getElementById('doorsBtn');
-const furnitureBtns = document.querySelectorAll('.furniture-btn'); // Az összes bútor gomb
+const furnitureBtns = document.querySelectorAll('.furniture-btn'); 
 
 function setActiveTool(toolId, btnElement, extraType = null) {
     currentTool = toolId;
-    selectedFurnitureType = extraType; // Megjegyezzük, melyik bútor
+    selectedFurnitureType = extraType; 
     
-    // Gombok vizuális frissítése
     wallsBtn.classList.remove('active');
     windowsBtn.classList.remove('active');
     doorsBtn.classList.remove('active');
@@ -18,51 +17,56 @@ function setActiveTool(toolId, btnElement, extraType = null) {
     isDrawing = false;
     currentStartNode = null;
     draggedWallIndex = null;
+    draggedFurnitureIndex = null;
     cleanUpNodes();
     draw();
 }
 
-// Bal oldali gombok
 wallsBtn.addEventListener('click', () => setActiveTool('walls', wallsBtn));
 windowsBtn.addEventListener('click', () => setActiveTool('windows', windowsBtn));
 doorsBtn.addEventListener('click', () => setActiveTool('doors', doorsBtn));
 
-// Jobb oldali (bútor) gombok
 furnitureBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        // A data-type alapján tudjuk, melyik bútor lett megnyomva
         setActiveTool('furniture', btn, btn.dataset.type);
     });
 });
 
 
-//EGÉR LENYOMÁSA
+// --- EGÉR LENYOMÁSA ---
 canvas.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return; // Csak bal gomb
+    if (e.button !== 0) return; 
     let clickPos = getMousePos(e);
 
+    // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
+    if (hoveredFurnitureIndex !== null) {
+        draggedFurnitureIndex = hoveredFurnitureIndex;
+        lastMousePos = { x: clickPos.x, y: clickPos.y };
+        return;
+    }
+
+    // 2. Új bútor lerakása
     if (currentTool === 'furniture') {
         furnitures.push({
             type: selectedFurnitureType,
             x: clickPos.x,
             y: clickPos.y,
-            angle: 0 // Később ezt lehet majd gombbal forgatni!
+            angle: currentFurnitureAngle // Forgatott szöggel rakjuk le
         });
         draw();
+        updateDataBar();
         return;
     }
-    //Ablak vagy ajtó
+
+    // 3. Ablak vagy ajtó
     if (currentTool === 'windows' || currentTool === 'doors') {
         if (hoveredWallIndex !== null) {
             const w = walls[hoveredWallIndex];
             const n1 = nodes[w.startNode];
             const n2 = nodes[w.endNode];
             
-            //Kiszámoljuk, hány %-nál kattintottunk a falra
             let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
             let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
-            
-            //Levágjuk a széleket, hogy ne lógjon le az ablak a fal végéről
             t = Math.max(0.05, Math.min(0.95, t)); 
             
             if (currentTool === 'windows') {
@@ -75,6 +79,7 @@ canvas.addEventListener('mousedown', (e) => {
         return;
     }
 
+    // 4. Fal rajzolása / mozgatása
     if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
         clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
@@ -119,41 +124,49 @@ canvas.addEventListener('mousedown', (e) => {
     draw();
 });
 
-// EGÉR MOZGATÁSA
+// --- EGÉR MOZGATÁSA ---
 canvas.addEventListener('mousemove', (e) => {
     mousePosition = getMousePos(e);
     
-    // 1. Fal Hover megkeresése
+    // Hover megkeresése (Falak és Bútorok)
     let foundHover = null;
     for (let i = 0; i < walls.length; i++) {
         const w = walls[i];
         const n1 = nodes[w.startNode];
         const n2 = nodes[w.endNode];
         if (getDistanceToLine(mousePosition.x, mousePosition.y, n1.x, n1.y, n2.x, n2.y) < 12) { 
-            foundHover = i;
-            break;
+            foundHover = i; break;
         }
     }
     
-    // 2. Bútor Hover megkeresése
     let foundFurnitureHover = null;
     for (let i = 0; i < furnitures.length; i++) {
         const f = furnitures[i];
         const dist = Math.sqrt(Math.pow(mousePosition.x - f.x, 2) + Math.pow(mousePosition.y - f.y, 2));
-        if (dist < 40) { // 40 pixel sugarú körben érzékeli az egeret
-            foundFurnitureHover = i;
-            break;
+        if (dist < 40) { 
+            foundFurnitureHover = i; break;
         }
     }
     
-    // Csak akkor rajzolunk újra, ha valaminek a kijelölése megváltozott
     if (hoveredWallIndex !== foundHover || hoveredFurnitureIndex !== foundFurnitureHover) {
         hoveredWallIndex = foundHover;
         hoveredFurnitureIndex = foundFurnitureHover;
         draw();
     }
 
-    // Mozgatás és Rajzolás
+    // BÚTOR MOZGATÁSA (Elsőbbséget élvez)
+    if (draggedFurnitureIndex !== null) {
+        const dx = mousePosition.x - lastMousePos.x;
+        const dy = mousePosition.y - lastMousePos.y;
+        furnitures[draggedFurnitureIndex].x += dx;
+        furnitures[draggedFurnitureIndex].y += dy;
+        lastMousePos = { x: mousePosition.x, y: mousePosition.y };
+        draw();
+        updateDataBar();
+        return; 
+    }
+
+    // FAL MOZGATÁSA / RAJZOLÁSA
     if (currentTool === 'walls') {
         if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
             const start = nodes[currentStartNode];
@@ -179,18 +192,17 @@ canvas.addEventListener('mousemove', (e) => {
     } else {
         draw();
     }
-    
-    // MINDIG frissítjük az adatokat, ha mozog az egér
     updateDataBar();
 });
 
-//EGÉR ELENGEDÉSE
+// --- EGÉR ELENGEDÉSE ---
 window.addEventListener('mouseup', () => {
     draggedWallIndex = null; 
+    draggedFurnitureIndex = null; // Letesszük a bútort is
     draw(); 
 });
 
-//JOBB KLIKK MEGSZAKÍTÁS
+// --- JOBB KLIKK MEGSZAKÍTÁS ---
 canvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     isDrawing = false;
@@ -199,49 +211,80 @@ canvas.addEventListener('contextmenu', (e) => {
     draw();
 });
 
-//TÖRLÉS BILLENTYŰZETTEL
-window.addEventListener('keydown', (e) => {
-    if ((e.key === 'Delete' || e.key === 'Backspace') && hoveredWallIndex !== null && currentTool === 'walls') {
+// --- ÚJ: GÖRGŐVEL FORGATÁS ---
+window.addEventListener('wheel', (e) => {
+    if (e.target === canvas) { // Csak akkor forgasson, ha az egerünk a vásznon van
+        e.preventDefault(); 
+        const angleChange = (Math.PI / 12) * Math.sign(e.deltaY); // 15 fok
         
-        const deletedIndex = hoveredWallIndex;
-        walls.splice(deletedIndex, 1); // Fal törlése
-        hoveredWallIndex = null;
-        cleanUpNodes(); 
-        
-        //Töröljük a falhoz tartozó ablakokat/ajtókat is
-        windows = windows.filter(w => w.wallIndex !== deletedIndex);
-        doors = doors.filter(d => d.wallIndex !== deletedIndex);
-        
-        // Frissítjük a megmaradt elemek sorszámait, mert a falak listája rövidebb lett
-        windows.forEach(w => { if (w.wallIndex > deletedIndex) w.wallIndex--; });
-        doors.forEach(d => { if (d.wallIndex > deletedIndex) d.wallIndex--; });
+        if (draggedFurnitureIndex !== null) {
+            furnitures[draggedFurnitureIndex].angle += angleChange;
+        } else if (hoveredFurnitureIndex !== null) {
+            furnitures[hoveredFurnitureIndex].angle += angleChange;
+        } else if (currentTool === 'furniture') {
+            currentFurnitureAngle += angleChange;
+        }
+        draw();
+    }
+}, { passive: false });
 
+// --- BILLENTYŰZET: TÖRLÉS ÉS FORGATÁS ---
+window.addEventListener('keydown', (e) => {
+    // TÖRLÉS (Delete / Backspace)
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (hoveredWallIndex !== null && currentTool === 'walls') {
+            const deletedIndex = hoveredWallIndex;
+            walls.splice(deletedIndex, 1); 
+            hoveredWallIndex = null;
+            cleanUpNodes(); 
+            
+            windows = windows.filter(w => w.wallIndex !== deletedIndex);
+            doors = doors.filter(d => d.wallIndex !== deletedIndex);
+            windows.forEach(w => { if (w.wallIndex > deletedIndex) w.wallIndex--; });
+            doors.forEach(d => { if (d.wallIndex > deletedIndex) d.wallIndex--; });
+            draw();
+        } 
+        // Bútor törlése
+        else if (hoveredFurnitureIndex !== null) {
+            furnitures.splice(hoveredFurnitureIndex, 1);
+            hoveredFurnitureIndex = null;
+            draw();
+        }
+    }
+
+    // FORGATÁS ("R" gomb)
+    if (e.key === 'r' || e.key === 'R') {
+        const angleChange = Math.PI / 4; // 45 fok
+        if (draggedFurnitureIndex !== null) {
+            furnitures[draggedFurnitureIndex].angle += angleChange;
+        } else if (hoveredFurnitureIndex !== null) {
+            furnitures[hoveredFurnitureIndex].angle += angleChange;
+        } else if (currentTool === 'furniture') {
+            currentFurnitureAngle += angleChange;
+        }
         draw();
     }
 });
 
-//EGYÉB GOMBOK
+// --- EGYÉB GOMBOK ÉS FÜGGVÉNYEK ---
 const clearBtn = document.getElementById('clearBtn');
 clearBtn.addEventListener('click', () => {        
-    // Kiürítjük az összes adatot tároló listát
     nodes.length = 0; 
     walls.length = 0;
     windows.length = 0; 
     doors.length = 0;   
     furnitures.length = 0;
     
-    // Alaphelyzetbe állítjuk az állapotokat
     isDrawing = false;
     currentStartNode = null;
     draggedWallIndex = null;
     hoveredWallIndex = null;
     
-    // Bútoros állapotok alaphelyzetbe állítása
     hoveredFurnitureIndex = null;
     draggedFurnitureIndex = null;
     selectedFurnitureType = null;
+    currentFurnitureAngle = 0;
     
-    // Újrarajzoljuk a vásznat
     draw();
 });
 
@@ -253,18 +296,16 @@ ninetyDegreeBtn.addEventListener('click', () => {
         ninetyDegreeBtn.innerText = "90° mode ON";
     } else {
         ninetyDegreeBtn.classList.remove('active'); 
-        ninetyDegreeBtn.innerText = "90°mode OFF";
+        ninetyDegreeBtn.innerText = "90° mode OFF";
     }
 });
 
-// --- ADATSÁV FRISSÍTÉSE ---
 function updateDataBar() {
     const infoType = document.getElementById('infoType');
     const infoSize = document.getElementById('infoSize');
     if (!infoType || !infoSize) return;
 
     if (hoveredWallIndex !== null) {
-        // Ha egy fal felett van az egér, kiszámoljuk a hosszát
         const wall = walls[hoveredWallIndex];
         const n1 = nodes[wall.startNode];
         const n2 = nodes[wall.endNode];
@@ -276,7 +317,6 @@ function updateDataBar() {
         infoSize.innerText = length + " px";
     } 
     else if (hoveredFurnitureIndex !== null) {
-        // Ha egy bútor felett van az egér
         const f = furnitures[hoveredFurnitureIndex];
         let typeName = "";
         let size = "";
@@ -289,11 +329,10 @@ function updateDataBar() {
         infoSize.innerText = size;
     } 
     else {
-        // Semmi nincs kijelölve
         infoType.innerText = "-";
         infoSize.innerText = "-";
     }
 }
 
-//PROGRAM INDÍTÁSA
+// PROGRAM INDÍTÁSA
 draw();
