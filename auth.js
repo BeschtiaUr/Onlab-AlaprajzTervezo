@@ -1,12 +1,4 @@
 // 1. FIREBASE CONFIGURATION
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDHaYZpz2GhafrWh9mxac6bBae2t6cWV70",
   authDomain: "alaprajztervezo.firebaseapp.com",
@@ -17,72 +9,103 @@ const firebaseConfig = {
   measurementId: "G-L4477L00VP"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore(); // ÚJ: Firestore elindítása
 
 // 2. DOM ELEMENTS
 const loginScreen = document.getElementById('login-screen');
 const mainApp = document.getElementById('main-app');
-
 const emailInput = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
 const authError = document.getElementById('authError');
-
 const loginBtn = document.getElementById('loginBtn');
 const registerBtn = document.getElementById('registerBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
 // 3. LISTEN TO AUTHENTICATION STATE
-// This magically runs every time the user logs in or logs out
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // User is logged in -> Hide login screen, show app
         loginScreen.style.display = 'none';
         mainApp.style.display = 'flex';
         console.log("Logged in as:", user.email);
+        
+        // ÚJ: Belépéskor automatikusan betöltjük a mentett tervet!
+        loadFloorplan(user.uid);
     } else {
-        // User is logged out -> Show login screen, hide app
         loginScreen.style.display = 'flex';
         mainApp.style.display = 'none';
     }
 });
 
-// 4. LOGIN FUNCTION
+// --- ÚJ: MENTÉS FUNKCIÓ ---
+function saveFloorplan() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    // Összecsomagoljuk a state.js-ben lévő változókat
+    const dataToSave = {
+        nodes: nodes,
+        walls: walls,
+        windows: windows,
+        doors: doors,
+        furnitures: furnitures,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Mentés a 'floorplans' kollekcióba, a felhasználó ID-jával
+    db.collection("floorplans").doc(user.uid).set(dataToSave)
+        .then(() => {
+            console.log("Sikeres mentés a felhőbe!");
+            alert("Terv sikeresen elmentve!");
+        })
+        .catch((error) => {
+            console.error("Hiba a mentés során:", error);
+        });
+}
+
+// --- ÚJ: BETÖLTÉS FUNKCIÓ ---
+function loadFloorplan(userId) {
+    console.log("Adatok lekérése a Firestore-ból...");
+    db.collection("floorplans").doc(userId).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                
+                // Csak akkor töltjük be, ha az adat létezik a mentésben
+                if (data.nodes) { nodes.length = 0; nodes.push(...data.nodes); }
+                if (data.walls) { walls.length = 0; walls.push(...data.walls); }
+                if (data.windows) { windows.length = 0; windows.push(...data.windows); }
+                if (data.doors) { doors.length = 0; doors.push(...data.doors); }
+                if (data.furnitures) { furnitures.length = 0; furnitures.push(...data.furnitures); }
+                
+                console.log("Terv sikeresen betöltve!");
+                
+                // Fontos: Várunk egy picit, hogy minden szkript betöltsön, majd rajzolunk
+                setTimeout(() => {
+                    if (typeof draw === "function") draw();
+                    if (typeof updateDataBar === "function") updateDataBar();
+                }, 100);
+            } else {
+                console.log("Nincs még mentett terv.");
+            }
+        })
+        .catch((error) => {
+            console.error("Hiba a betöltés során:", error);
+        });
+}
+
+// 4. LOGIN / REGISTER / LOGOUT
 loginBtn.addEventListener('click', () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    authError.style.display = 'none';
-
-    auth.signInWithEmailAndPassword(email, password)
-        .catch((error) => {
-            authError.innerText = error.message;
-            authError.style.display = 'block';
-        });
+    auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
+        .catch(error => { authError.innerText = error.message; authError.style.display = 'block'; });
 });
 
-// 5. REGISTER FUNCTION
 registerBtn.addEventListener('click', () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    authError.style.display = 'none';
-
-    auth.createUserWithEmailAndPassword(email, password)
-        .catch((error) => {
-            authError.innerText = error.message;
-            authError.style.display = 'block';
-        });
+    auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
+        .catch(error => { authError.innerText = error.message; authError.style.display = 'block'; });
 });
 
-// 6. LOGOUT FUNCTION
 logoutBtn.addEventListener('click', () => {
-    auth.signOut().then(() => {
-        // Clear inputs when signing out
-        emailInput.value = '';
-        passwordInput.value = '';
-    });
+    auth.signOut().then(() => { emailInput.value = ''; passwordInput.value = ''; });
 });

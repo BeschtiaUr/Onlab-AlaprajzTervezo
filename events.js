@@ -2,6 +2,7 @@ const wallsBtn = document.getElementById('wallsBtn');
 const windowsBtn = document.getElementById('windowsBtn');
 const doorsBtn = document.getElementById('doorsBtn');
 const furnitureBtns = document.querySelectorAll('.furniture-btn'); 
+const exportBtn = document.getElementById('exportBtn');
 
 function setActiveTool(toolId, btnElement, extraType = null) {
     currentTool = toolId;
@@ -211,7 +212,7 @@ canvas.addEventListener('contextmenu', (e) => {
     draw();
 });
 
-// --- ÚJ: GÖRGŐVEL FORGATÁS ---
+// --- GÖRGŐVEL FORGATÁS ---
 window.addEventListener('wheel', (e) => {
     if (e.target === canvas) { // Csak akkor forgasson, ha az egerünk a vásznon van
         e.preventDefault(); 
@@ -265,6 +266,20 @@ window.addEventListener('keydown', (e) => {
         draw();
     }
 });
+
+
+// --- MENTÉS GOMB BEKÖTÉSE (Már biztonságosan kívül van) ---
+if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+        // Ellenőrizzük, hogy létezik-e az auth.js-ben megírt saveFloorplan függvény
+        if (typeof saveFloorplan === "function") {
+            saveFloorplan();
+        } else {
+            console.error("A saveFloorplan függvény nem található!");
+            alert("Hiba: A mentés funkció még nincs betöltve.");
+        }
+    });
+}
 
 // --- EGYÉB GOMBOK ÉS FÜGGVÉNYEK ---
 const clearBtn = document.getElementById('clearBtn');

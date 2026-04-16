@@ -8,6 +8,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -19,7 +20,7 @@
             <input type="email" id="emailInput" placeholder="Email address">
             <input type="password" id="passwordInput" placeholder="Password">
             
-            <p id="authError" style="color: #ff4444; font-size: 14px; display: none;"></p>
+            <p id="authError" style="color: #ff4444; font-size: 14px; display: none;">Hibás felhasználónév vagy jelszó!</p>
             
             <button id="loginBtn" class="tool-btn active" style="width: 100%; text-align: center; margin-top: 10px;">Login</button>
             <button id="registerBtn" class="tool-btn" style="width: 100%; text-align: center; margin-top: 10px;">Create Account</button>
@@ -38,7 +39,7 @@
             <button id="ninetyDegreeBtn" class="ninety-degree-btn">90° mode OFF</button>
             <button id="clearBtn" class="clear-btn">Clear all</button>
             
-            <button id="logoutBtn" class="clear-btn" style="background-color: #34495e; margin-top: 10px;">🚪 Logout</button>
+            <button id="logoutBtn" class="clear-btn" style="background-color: #34495e; margin-top: 10px;">Logout</button>
         </div>
         
         <div class="canvas-container">
@@ -59,11 +60,14 @@
                     <p>Selected: <span id="infoType">-</span></p>
                     <p>Size: <span id="infoSize">-</span></p>
                 </div>
+                
+                <button id="exportBtn" class="tool-btn" style="margin-top: 15px; background-color: #27ae60; width: 100%; text-align: center;">Save</button>
             </div>
         </div> 
     </div>
 
-    <script src="auth.js"></script> <script src="state.js"></script>
+    <script src="state.js"></script>
+    <script src="auth.js"></script> 
     <script src="helpers.js"></script>
     <script src="draw.js"></script>
     <script src="events.js"></script>
