@@ -294,6 +294,7 @@ clearBtn.addEventListener('click', () => {
     currentStartNode = null;
     draggedWallIndex = null;
     hoveredWallIndex = null;
+    bgImage = null;
     
     hoveredFurnitureIndex = null;
     draggedFurnitureIndex = null;
@@ -301,6 +302,7 @@ clearBtn.addEventListener('click', () => {
     currentFurnitureAngle = 0;
     
     draw();
+    updateDataBar();
 });
 
 const ninetyDegreeBtn = document.getElementById('ninetyDegreeBtn');
@@ -347,6 +349,26 @@ function updateDataBar() {
         infoType.innerText = "-";
         infoSize.innerText = "-";
     }
+}
+
+//Háttérkép felötlése
+const bgUpload = document.getElementById('bgUpload');
+if (bgUpload) {
+    bgUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                bgImage = img; // Eltároljuk a képet
+                draw(); // Újrarajzoljuk a vásznat, hogy megjelenjen
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file); // Fájl beolvasása Data URL-ként
+    });
 }
 
 // PROGRAM INDÍTÁSA
