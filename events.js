@@ -294,7 +294,7 @@ clearBtn.addEventListener('click', () => {
     currentStartNode = null;
     draggedWallIndex = null;
     hoveredWallIndex = null;
-    bgImage = null;
+    //bgImage = null;
     
     hoveredFurnitureIndex = null;
     draggedFurnitureIndex = null;
@@ -350,6 +350,13 @@ function updateDataBar() {
         infoSize.innerText = "-";
     }
 }
+
+const toggleBg = document.getElementById('toggleBg');
+toggleBg.addEventListener('click', () => {
+    showBackground = !showBackground; 
+    
+    draw(); 
+});
 
 //Háttérkép felötlése
 const bgUpload = document.getElementById('bgUpload');

@@ -121,23 +121,40 @@ function drawFurnitureItem(x, y, type, angle, isHover = false) {
     ctx.restore();
 }
 
-
-//FŐ RAJZOLÓ FÜGGVÉNY
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); 
-    
+function drawBackgroundImage() {
     if (bgImage) {
-        // Kiszámoljuk az arányokat, hogy a kép beférjen a vászonra, de ne torzuljon
+    // Kiszámoljuk az arányokat, hogy a kép beférjen a vászonra, de ne torzuljon
+    const scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
+    const drawWidth = bgImage.width * scale;
+    const drawHeight = bgImage.height * scale;
+    const x = (canvas.width / 2) - (drawWidth / 2);
+    const y = (canvas.height / 2) - (drawHeight / 2);
+
+    ctx.globalAlpha = 0.4; // 40%-os átlátszóság a háttérhez
+    ctx.drawImage(bgImage, x, y, drawWidth, drawHeight);
+    ctx.globalAlpha = 1.0; // Visszaállítjuk az átlátszóságot a falakhoz
+    }
+}
+
+function drawBackgroundImage() {
+    if (bgImage && showBackground) { 
         const scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
         const drawWidth = bgImage.width * scale;
         const drawHeight = bgImage.height * scale;
         const x = (canvas.width / 2) - (drawWidth / 2);
         const y = (canvas.height / 2) - (drawHeight / 2);
 
-        ctx.globalAlpha = 0.4; // 40%-os átlátszóság a háttérhez
+        ctx.globalAlpha = 0.4; 
         ctx.drawImage(bgImage, x, y, drawWidth, drawHeight);
-        ctx.globalAlpha = 1.0; // Visszaállítjuk az átlátszóságot a falakhoz
+        ctx.globalAlpha = 1.0; 
     }
+}
+
+//FŐ RAJZOLÓ FÜGGVÉNY
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+    drawBackgroundImage(); // Ha van háttérkép, rajzoljuk ki először
 
     drawGrid();
 

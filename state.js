@@ -8,6 +8,7 @@ let windows = [];
 let doors = [];
 
 let bgImage = null;
+let showBackground = true;
 
 let currentTool = "walls"; 
 
