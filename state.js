@@ -7,6 +7,8 @@ let walls = []; // Falak {startNode, endNode}
 let windows = [];
 let doors = [];
 
+let bgImage = null;
+
 let currentTool = "walls"; 
 
 let isDrawing = false;

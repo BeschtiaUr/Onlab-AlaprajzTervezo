@@ -38,7 +38,7 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// --- ÚJ: MENTÉS FUNKCIÓ ---
+// --- MENTÉS FUNKCIÓ ---
 function saveFloorplan() {
     const user = auth.currentUser;
     if (!user) return;
@@ -56,17 +56,17 @@ function saveFloorplan() {
     // Mentés a 'floorplans' kollekcióba, a felhasználó ID-jával
     db.collection("floorplans").doc(user.uid).set(dataToSave)
         .then(() => {
-            console.log("Sikeres mentés a felhőbe!");
-            alert("Terv sikeresen elmentve!");
+            console.log("Succeesfully saved to Cloud!");
+            alert("Succeesfully saved to Cloud!");
         })
         .catch((error) => {
-            console.error("Hiba a mentés során:", error);
+            console.error("Error during save:", error);
         });
 }
 
 // --- ÚJ: BETÖLTÉS FUNKCIÓ ---
 function loadFloorplan(userId) {
-    console.log("Adatok lekérése a Firestore-ból...");
+    console.log("Getting data");
     db.collection("floorplans").doc(userId).get()
         .then((doc) => {
             if (doc.exists) {
@@ -79,7 +79,7 @@ function loadFloorplan(userId) {
                 if (data.doors) { doors.length = 0; doors.push(...data.doors); }
                 if (data.furnitures) { furnitures.length = 0; furnitures.push(...data.furnitures); }
                 
-                console.log("Terv sikeresen betöltve!");
+                console.log("Floorplan successfully loaded!");
                 
                 // Fontos: Várunk egy picit, hogy minden szkript betöltsön, majd rajzolunk
                 setTimeout(() => {
@@ -87,11 +87,11 @@ function loadFloorplan(userId) {
                     if (typeof updateDataBar === "function") updateDataBar();
                 }, 100);
             } else {
-                console.log("Nincs még mentett terv.");
+                console.log("There is no saved plan.");
             }
         })
         .catch((error) => {
-            console.error("Hiba a betöltés során:", error);
+            console.error("Error during load:", error);
         });
 }
 
