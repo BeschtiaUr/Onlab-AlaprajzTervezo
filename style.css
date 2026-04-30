@@ -24,7 +24,7 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
     box-sizing: border-box;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     z-index: 10;

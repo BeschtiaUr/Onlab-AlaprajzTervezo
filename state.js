@@ -10,6 +10,8 @@ let doors = [];
 let bgImage = null;
 let showBackground = true;
 
+let wallThickness =20;
+
 let currentTool = "walls"; 
 
 let isDrawing = false;

@@ -13,7 +13,16 @@ function setActiveTool(toolId, btnElement, extraType = null) {
     doorsBtn.classList.remove('active');
     furnitureBtns.forEach(btn => btn.classList.remove('active'));
     
-    btnElement.classList.add('active');
+    if(btnElement) btnElement.classList.add('active');
+
+    const wallSettingsWidget = document.getElementById('wallSettingsWidget');
+    if(wallSettingsWidget){
+        if(toolId === 'walls'){
+            wallSettingsWidget.style.display = 'flex';
+        } else {
+            wallSettingsWidget.style.display = 'none';
+        }
+    }
     
     isDrawing = false;
     currentStartNode = null;
@@ -216,7 +225,7 @@ canvas.addEventListener('contextmenu', (e) => {
 window.addEventListener('wheel', (e) => {
     if (e.target === canvas) { // Csak akkor forgasson, ha az egerünk a vásznon van
         e.preventDefault(); 
-        const angleChange = (Math.PI / 12) * Math.sign(e.deltaY); // 15 fok
+        const angleChange = (Math.PI / 24) * Math.sign(e.deltaY); // 15 fok
         
         if (draggedFurnitureIndex !== null) {
             furnitures[draggedFurnitureIndex].angle += angleChange;
@@ -376,6 +385,18 @@ if (bgUpload) {
         };
         reader.readAsDataURL(file); // Fájl beolvasása Data URL-ként
     });
+}
+
+const thicknesSlider = document.getElementById('thicknessSlider');
+const thicknessDisplay = document.getElementById('thicknessDisplay');
+if(thicknessSlider){
+    thicknessSlider.addEventListener('input', (e) =>{
+        wallThickness = parseInt(e.target.value);
+        if(thicknessDisplay){
+            thicknessDisplay.innerText = wallThickness;
+        }
+        draw();
+    })
 }
 
 // PROGRAM INDÍTÁSA

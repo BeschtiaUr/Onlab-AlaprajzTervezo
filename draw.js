@@ -20,25 +20,28 @@ function drawWindow(x, y, angle, length) {
     ctx.translate(x, y); //A vászon origóját az ablak közepére toljuk
     ctx.rotate(angle); //Elforgatjuk a vásznat a fal szögébe
 
+    const halfT = wallThickness / 2;
+
     //Fehér háttér
     ctx.fillStyle = 'white';
-    ctx.fillRect(-length / 2, -11, length, 22);
+    ctx.fillRect(-length / 2, -(halfT + 1), length, wallThickness + 2);
 
     //Az ablaküveg vonalai
     ctx.strokeStyle = '#87CEEB';
     ctx.lineWidth = 4;
     ctx.lineCap = 'butt';
     ctx.beginPath();
-    ctx.moveTo(-length / 2, -4); ctx.lineTo(length / 2, -4);
-    ctx.moveTo(-length / 2, 4);  ctx.lineTo(length / 2, 4);
+    const glassOffSet = Math.max(1, wallThickness / 5)
+    ctx.moveTo(-length / 2, -glassOffSet); ctx.lineTo(length / 2, -glassOffSet);
+    ctx.moveTo(-length / 2, glassOffSet);  ctx.lineTo(length / 2, glassOffSet);
     ctx.stroke();
 
     //A keret két széle
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-length / 2, -10); ctx.lineTo(-length / 2, 10);
-    ctx.moveTo(length / 2, -10);  ctx.lineTo(length / 2, 10);
+    ctx.moveTo(-length / 2, -halfT); ctx.lineTo(-length / 2, halfT);
+    ctx.moveTo(length / 2, -halfT);  ctx.lineTo(length / 2, halfT);
     ctx.stroke();
 
     ctx.restore();
@@ -50,17 +53,18 @@ function drawDoor(x, y, angle, length) {
     ctx.translate(x, y);
     ctx.rotate(angle);
 
+    const halfT = wallThickness / 2;
+
     //Kivágjuk a falat
     ctx.fillStyle = 'white';
-    ctx.fillRect(-length / 2, -11, length, 22);
-
+    ctx.fillRect(-length / 2, -(halfT + 1), length, wallThickness + 2);
     //Ajtólap
     ctx.strokeStyle = '#e67e22';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(-length / 2, -10);
-    ctx.lineTo(-length / 2, -10 - length);
+    ctx.moveTo(-length / 2, -halfT);
+    ctx.lineTo(-length / 2, -halfT - length);
     ctx.stroke();
 
     //Nyitásirány íve
@@ -68,7 +72,7 @@ function drawDoor(x, y, angle, length) {
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]); //5px vonal, 5px szünet
     ctx.beginPath();
-    ctx.arc(-length / 2, -10, length, 0, -Math.PI / 2, true); //Ív húzása
+    ctx.arc(-length / 2, -halfT, length, 0, -Math.PI / 2, true); //Ív húzása
     ctx.stroke();
     ctx.setLineDash([]); //Szaggatott vonal kikapcsolása
 
@@ -76,8 +80,8 @@ function drawDoor(x, y, angle, length) {
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-length / 2, -10); ctx.lineTo(-length / 2, 10);
-    ctx.moveTo(length / 2, -10);  ctx.lineTo(length / 2, 10);
+    ctx.moveTo(-length / 2, -halfT); ctx.lineTo(-length / 2, halfT);
+    ctx.moveTo(length / 2, -halfT);  ctx.lineTo(length / 2, halfT);
     ctx.stroke();
 
     ctx.restore();
@@ -168,15 +172,15 @@ function draw() {
         ctx.beginPath();
         if (currentTool === 'walls' && index === draggedWallIndex) {
             ctx.strokeStyle = '#05a9af'; 
-            ctx.lineWidth = 20;
+            ctx.lineWidth = wallThickness;
         } 
         else if (currentTool === 'walls' && index === hoveredWallIndex) {
             ctx.strokeStyle = '#ff4444'; 
-            ctx.lineWidth = 20;
+            ctx.lineWidth = wallThickness;
         } 
         else {
             ctx.strokeStyle = '#333';
-            ctx.lineWidth = 20;
+            ctx.lineWidth = wallThickness;
         }
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
@@ -221,7 +225,7 @@ function draw() {
     //ÉPP HÚZOTT FAL
     if (currentTool === 'walls' && isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
-        ctx.lineWidth = 20;
+        ctx.lineWidth = wallThickness;
         ctx.strokeStyle = 'rgba(51, 51, 51, 0.4)'; 
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
