@@ -8,9 +8,10 @@ let windows = [];
 let doors = [];
 
 let bgImage = null;
-let showBackground = true;
+let bgOpacity = 1.0; // Alapértelmezett átlátszatlanság
 
 let wallThickness =20;
+
 
 let currentTool = "walls"; 
 

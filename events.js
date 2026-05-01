@@ -360,12 +360,18 @@ function updateDataBar() {
     }
 }
 
-const toggleBg = document.getElementById('toggleBg');
-toggleBg.addEventListener('click', () => {
-    showBackground = !showBackground; 
-    
-    draw(); 
-});
+const opacitySlider = document.getElementById('opacitySlider');
+const opacityDisplay = document.getElementById('opacityDisplay');
+if(opacitySlider)
+{
+    opacitySlider.addEventListener('input', (e) => {
+        bgOpacity = parseFloat(e.target.value);
+        if(opacityDisplay){
+            opacityDisplay.innerText = bgOpacity.toFixed(2);
+        }
+        draw();
+    })
+}
 
 //Háttérkép felötlése
 const bgUpload = document.getElementById('bgUpload');

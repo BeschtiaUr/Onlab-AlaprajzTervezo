@@ -141,14 +141,14 @@ function drawBackgroundImage() {
 }
 
 function drawBackgroundImage() {
-    if (bgImage && showBackground) { 
+    if (bgImage) { 
         const scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
         const drawWidth = bgImage.width * scale;
         const drawHeight = bgImage.height * scale;
         const x = (canvas.width / 2) - (drawWidth / 2);
         const y = (canvas.height / 2) - (drawHeight / 2);
 
-        ctx.globalAlpha = 0.4; 
+        ctx.globalAlpha = bgOpacity; // Használjuk a dinamikus átlátszóságot
         ctx.drawImage(bgImage, x, y, drawWidth, drawHeight);
         ctx.globalAlpha = 1.0; 
     }
