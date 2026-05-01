@@ -90,6 +90,7 @@ canvas.addEventListener('mousedown', (e) => {
     }
 
     // 4. Fal rajzolása / mozgatása
+    // 4. Fal rajzolása / mozgatása
     if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
         clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
@@ -98,34 +99,46 @@ canvas.addEventListener('mousedown', (e) => {
     const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
 
     if (!isDrawing) {
+        // Ha egy meglevő csomópontra kattintott, indul a rajzolás
         if (snappedNodeIndex !== null) {
             isDrawing = true;
             currentStartNode = snappedNodeIndex;
             return; 
         }
 
+        // Ha falra kattintott, "feljegyezzük", de NEM rajzolunk azonnal
         if (hoveredWallIndex !== null) {
-            draggedWallIndex = hoveredWallIndex; 
-            lastMousePos = { x: clickPos.x, y: clickPos.y }; 
-            draw();
-            return;
+            maybeDraggingWallIndex = hoveredWallIndex; 
+            mouseDownPos = { x: clickPos.x, y: clickPos.y }; 
+            return; // Kilépünk! Várunk, hogy elhúzza-e (húzás) vagy elengedi-e (rajzolás)
         }
-    }
 
-    if (!isDrawing) {
+        // Ha üres helyre kattintott, kezdünk rajzolni egy új falat
         isDrawing = true;
-        if (snappedNodeIndex !== null) {
-            currentStartNode = snappedNodeIndex;
-        } else {
-            nodes.push({ x: clickPos.x, y: clickPos.y });
-            currentStartNode = nodes.length - 1;
-        }
+        nodes.push({ x: clickPos.x, y: clickPos.y });
+        currentStartNode = nodes.length - 1;
+
     } else {
+        // Ha már rajzolunk (isDrawing === true), akkor befejezzük az aktuális falat
         let endNodeIndex;
         if (snappedNodeIndex !== null) {
-            endNodeIndex = snappedNodeIndex;
+            endNodeIndex = snappedNodeIndex; // Hozzátapad egy meglévő ponthoz
         } else {
-            nodes.push({ x: clickPos.x, y: clickPos.y });
+            // Rátapadás egy meglévő falra
+            let finalX = clickPos.x;
+            let finalY = clickPos.y;
+            if(hoveredWallIndex !== null){
+                const w = walls[hoveredWallIndex];
+                const n1 = nodes[w.startNode];
+                const n2 = nodes[w.endNode];
+                let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
+                let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
+                t = Math.max(0, Math.min(1, t)); 
+                finalX = n1.x + t * (n2.x - n1.x);
+                finalY = n1.y + t * (n2.y - n1.y);
+            }
+
+            nodes.push({ x: finalX, y: finalY });
             endNodeIndex = nodes.length - 1;
         }
         walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
@@ -162,6 +175,18 @@ canvas.addEventListener('mousemove', (e) => {
         hoveredWallIndex = foundHover;
         hoveredFurnitureIndex = foundFurnitureHover;
         draw();
+    }
+
+    if(maybeDraggingWallIndex !== null){
+        const dx = mousePosition.x - mouseDownPos.x;
+        const dy = mousePosition.y - mouseDownPos.y;
+        
+        // Ha legalább 5 pixelt elhúztad az egeret lenyomott gombbal:
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+            draggedWallIndex = maybeDraggingWallIndex; // Elindítjuk a húzást
+            lastMousePos = { x: mouseDownPos.x, y: mouseDownPos.y };
+            maybeDraggingWallIndex = null; // Töröljük a "talán" állapotot
+        }
     }
 
     // BÚTOR MOZGATÁSA (Elsőbbséget élvez)
@@ -207,8 +232,28 @@ canvas.addEventListener('mousemove', (e) => {
 
 // --- EGÉR ELENGEDÉSE ---
 window.addEventListener('mouseup', () => {
+    // Ha a "talán" állapot még él, az azt jelenti, HOGY EZ EGY KATTINTÁS VOLT EGY FALON!
+    if (maybeDraggingWallIndex !== null && currentTool === 'walls') {
+        isDrawing = true;
+
+        // Kiszámoljuk a KATTINTÁS PONTOS HELYÉT a falon a tökéletes illeszkedéshez
+        const w = walls[maybeDraggingWallIndex];
+        const n1 = nodes[w.startNode];
+        const n2 = nodes[w.endNode];
+        let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
+        let t = ((mouseDownPos.x - n1.x) * (n2.x - n1.x) + (mouseDownPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
+        t = Math.max(0, Math.min(1, t)); 
+        const exactX = n1.x + t * (n2.x - n1.x);
+        const exactY = n1.y + t * (n2.y - n1.y);
+
+        nodes.push({ x: exactX, y: exactY }); // Lerakunk egy új csomópontot PONT a falra
+        currentStartNode = nodes.length - 1;
+
+        maybeDraggingWallIndex = null; // Töröljük az állapotot
+    }
+
     draggedWallIndex = null; 
-    draggedFurnitureIndex = null; // Letesszük a bútort is
+    draggedFurnitureIndex = null; 
     draw(); 
 });
 

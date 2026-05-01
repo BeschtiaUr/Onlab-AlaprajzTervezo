@@ -26,6 +26,9 @@ let draggedWallIndex = null;
 let lastMousePos = { x: 0, y: 0 }; 
 let hoveredWallIndex = null;
 
+let maybeDraggingWallIndex = null;
+let mouseDownPos = { x: 0, y: 0 };
+
 let furnitures = []; // Bútorok { type: string, x: number, y: number, angle: number }
 let selectedFurnitureType = null; // Milyen bútort választottunk a jobb menüből
 
