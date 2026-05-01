@@ -128,7 +128,7 @@ canvas.addEventListener('mousedown', (e) => {
             nodes.push({ x: clickPos.x, y: clickPos.y });
             endNodeIndex = nodes.length - 1;
         }
-        walls.push({ startNode: currentStartNode, endNode: endNodeIndex });
+        walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
         currentStartNode = endNodeIndex; 
     }
     draw();

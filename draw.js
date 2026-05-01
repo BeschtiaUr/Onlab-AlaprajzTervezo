@@ -15,23 +15,23 @@ function drawGrid() {
 }
 
 //ABLAK RAJZOLÁSA
-function drawWindow(x, y, angle, length) {
+function drawWindow(x, y, angle, length, t) {
     ctx.save(); //Elmentjük a vászon eredeti állapotát
     ctx.translate(x, y); //A vászon origóját az ablak közepére toljuk
     ctx.rotate(angle); //Elforgatjuk a vásznat a fal szögébe
 
-    const halfT = wallThickness / 2;
+    const halfT = t / 2;
 
     //Fehér háttér
     ctx.fillStyle = 'white';
-    ctx.fillRect(-length / 2, -(halfT + 1), length, wallThickness + 2);
+    ctx.fillRect(-length / 2, -(halfT + 1), length, t + 2);
 
     //Az ablaküveg vonalai
     ctx.strokeStyle = '#87CEEB';
     ctx.lineWidth = 4;
     ctx.lineCap = 'butt';
     ctx.beginPath();
-    const glassOffSet = Math.max(1, wallThickness / 5)
+    const glassOffSet = Math.max(1, t / 5)
     ctx.moveTo(-length / 2, -glassOffSet); ctx.lineTo(length / 2, -glassOffSet);
     ctx.moveTo(-length / 2, glassOffSet);  ctx.lineTo(length / 2, glassOffSet);
     ctx.stroke();
@@ -48,16 +48,16 @@ function drawWindow(x, y, angle, length) {
 }
 
 //AJTÓ RAJZOLÁSA
-function drawDoor(x, y, angle, length) {
+function drawDoor(x, y, angle, length, t) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
 
-    const halfT = wallThickness / 2;
+    const halfT = t / 2;
 
     //Kivágjuk a falat
     ctx.fillStyle = 'white';
-    ctx.fillRect(-length / 2, -(halfT + 1), length, wallThickness + 2);
+    ctx.fillRect(-length / 2, -(halfT + 1), length, t + 2);
     //Ajtólap
     ctx.strokeStyle = '#e67e22';
     ctx.lineWidth = 4;
@@ -168,19 +168,20 @@ function draw() {
     walls.forEach((wall, index) => {
         const start = nodes[wall.startNode];
         const end = nodes[wall.endNode];
+        const currentT = wall.thickness || 20;
         
         ctx.beginPath();
         if (currentTool === 'walls' && index === draggedWallIndex) {
             ctx.strokeStyle = '#05a9af'; 
-            ctx.lineWidth = wallThickness;
+            ctx.lineWidth = currentT;
         } 
         else if (currentTool === 'walls' && index === hoveredWallIndex) {
             ctx.strokeStyle = '#ff4444'; 
-            ctx.lineWidth = wallThickness;
+            ctx.lineWidth = currentT;
         } 
         else {
             ctx.strokeStyle = '#333';
-            ctx.lineWidth = wallThickness;
+            ctx.lineWidth = currentT;
         }
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
@@ -190,35 +191,38 @@ function draw() {
     //KÉSZ ABLAKOK ÉS AJTÓK RAJZOLÁSA
     windows.forEach(win => {
         const w = walls[win.wallIndex];
+        const currentT = w.thickness || 20;
         const n1 = nodes[w.startNode];
         const n2 = nodes[w.endNode];
         //Kiszámoljuk az X, Y koordinátát
         const x = n1.x + (n2.x - n1.x) * win.position;
         const y = n1.y + (n2.y - n1.y) * win.position;
         const angle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
-        drawWindow(x, y, angle, win.length);
+        drawWindow(x, y, angle, win.length, currentT);
     });
 
     doors.forEach(door => {
         const w = walls[door.wallIndex];
+        const currentT = w.thickness || 20;
         const n1 = nodes[w.startNode];
         const n2 = nodes[w.endNode];
         const x = n1.x + (n2.x - n1.x) * door.position;
         const y = n1.y + (n2.y - n1.y) * door.position;
         const angle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
-        drawDoor(x, y, angle, door.length);
+        drawDoor(x, y, angle, door.length, currentT);
     });
 
     //ELŐNÉZET
     if (currentTool !== 'walls' && hoveredWallIndex !== null) {
         const w = walls[hoveredWallIndex];
+        const currentT = w.thickness || 20;
         const n1 = nodes[w.startNode];
         const n2 = nodes[w.endNode];
         const angle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
         
         ctx.globalAlpha = 0.5;
-        if (currentTool === 'windows') drawWindow(mousePosition.x, mousePosition.y, angle, 60);
-        if (currentTool === 'doors') drawDoor(mousePosition.x, mousePosition.y, angle, 50);
+        if (currentTool === 'windows') drawWindow(mousePosition.x, mousePosition.y, angle, 60, currentT);
+        if (currentTool === 'doors') drawDoor(mousePosition.x, mousePosition.y, angle, 50, currentT);
         ctx.globalAlpha = 1.0; // Visszaállítjuk az átlátszatlanságot
     }
 
