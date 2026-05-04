@@ -90,7 +90,6 @@ canvas.addEventListener('mousedown', (e) => {
     }
 
     // 4. Fal rajzolása / mozgatása
-    // 4. Fal rajzolása / mozgatása
     if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
         const start = nodes[currentStartNode];
         clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
@@ -405,19 +404,6 @@ function updateDataBar() {
     }
 }
 
-const opacitySlider = document.getElementById('opacitySlider');
-const opacityDisplay = document.getElementById('opacityDisplay');
-if(opacitySlider)
-{
-    opacitySlider.addEventListener('input', (e) => {
-        bgOpacity = parseFloat(e.target.value);
-        if(opacityDisplay){
-            opacityDisplay.innerText = bgOpacity.toFixed(2);
-        }
-        draw();
-    })
-}
-
 //Háttérkép felötlése
 const bgUpload = document.getElementById('bgUpload');
 if (bgUpload) {
@@ -438,6 +424,19 @@ if (bgUpload) {
     });
 }
 
+const opacitySlider = document.getElementById('opacitySlider');
+const opacityDisplay = document.getElementById('opacityDisplay');
+if(opacitySlider)
+{
+    opacitySlider.addEventListener('input', (e) => {
+        bgOpacity = parseFloat(e.target.value);
+        if(opacityDisplay){
+            opacityDisplay.innerText = bgOpacity.toFixed(2);
+        }
+        draw();
+    })
+}
+
 const thicknesSlider = document.getElementById('thicknessSlider');
 const thicknessDisplay = document.getElementById('thicknessDisplay');
 if(thicknessSlider){
@@ -445,6 +444,18 @@ if(thicknessSlider){
         wallThickness = parseInt(e.target.value);
         if(thicknessDisplay){
             thicknessDisplay.innerText = wallThickness;
+        }
+        draw();
+    })
+}
+
+const sizeSlider = document.getElementById('sizeSlider');
+const sizeDisplay = document.getElementById('sizeDisplay');
+if(sizeSlider){
+    sizeSlider.addEventListener('input', (e) => {
+        furnitureSize = parseInt(e.target.value);
+        if(sizeDisplay){
+            sizeDisplay.innerText = furnitureSize;
         }
         draw();
     })

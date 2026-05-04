@@ -100,26 +100,26 @@ function drawFurnitureItem(x, y, type, angle, isHover = false) {
     if (type === 'bed') {
         // Franciaágy
         ctx.fillStyle = '#f1c40f'; // Sárga takaró
-        ctx.fillRect(-40, -50, 80, 100);
+        ctx.fillRect(-furnitureSize/100*40, -furnitureSize/100*50, furnitureSize/100*80, furnitureSize); 
         ctx.fillStyle = '#fff'; // Párnák
-        ctx.fillRect(-35, -45, 30, 20);
-        ctx.fillRect(5, -45, 30, 20);
-        ctx.strokeRect(-40, -50, 80, 100);
+        ctx.fillRect(-furnitureSize/100*35, -furnitureSize/100*45, furnitureSize/100*30, furnitureSize/100*20);
+        ctx.fillRect(furnitureSize/100*5, -furnitureSize/100*45, furnitureSize/100*30, furnitureSize/100*20);
+        ctx.strokeRect(-furnitureSize/100*40, -furnitureSize/100*50, furnitureSize/100*80, furnitureSize);
     } 
     else if (type === 'sofa') {
         // Kanapé
         ctx.fillStyle = '#e74c3c'; // Piros ülőke
-        ctx.fillRect(-50, -25, 100, 50); 
+        ctx.fillRect(-furnitureSize/100*50, -furnitureSize/100*25, furnitureSize/100*100, furnitureSize/100*50); 
         ctx.fillStyle = '#c0392b'; // Háttámla és karfa
-        ctx.fillRect(-50, -25, 100, 15); // Háttámla
-        ctx.fillRect(-50, -10, 20, 35); // Bal karfa
-        ctx.fillRect(30, -10, 20, 35); // Jobb karfa
-        ctx.strokeRect(-50, -25, 100, 50);
+        ctx.fillRect(-furnitureSize/100*50, -furnitureSize/100*25, furnitureSize/100*100, furnitureSize/100*15); // Háttámla
+        ctx.fillRect(-furnitureSize/100*50, -furnitureSize/100*10, furnitureSize/100*20, furnitureSize/100*35); // Bal karfa
+        ctx.fillRect(furnitureSize/100*30, -furnitureSize/100*10, furnitureSize/100*20, furnitureSize/100*35); // Jobb karfa
+        ctx.strokeRect(-furnitureSize/100*50, -furnitureSize/100*25, furnitureSize/100*100, furnitureSize/100*50);
     } 
     else if (type === 'table') {
         ctx.fillStyle = '#ecf0f1'; // Asztallap
-        ctx.fillRect(-20, -40, 40, 80);
-        ctx.strokeRect(-20, -40, 40, 80);
+        ctx.fillRect(-furnitureSize/100*20, -furnitureSize/100*40, furnitureSize/100*40, furnitureSize/100*80);
+        ctx.strokeRect(-furnitureSize/100*20, -furnitureSize/100*40, furnitureSize/100*40, furnitureSize/100*80);
     }
 
     ctx.restore();

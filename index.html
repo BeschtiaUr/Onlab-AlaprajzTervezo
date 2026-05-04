@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alaprajz Tervező MVP</title>
+    <title>Floor Planner</title>
     <link rel="stylesheet" href="style.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -64,8 +64,13 @@
             </div>
             <div class="toolbar" id="wallSettingsWidget" style="display:flex";>
                 <h2>Wall Settings</h2>
-                <p style="font-size: 14px; margin-bottom: 5px;">Thickness:<span id="thicknessDisplay">20</span></p>
+                <p style="font-size: 15px; margin-bottom: 5px;">Thickness:<span id="thicknessDisplay">20</span></p>
                 <input type="range" id="thicknessSlider" min="5" max="40" value="20" style="width: 100;">
+            </div>
+            <div class="toolbar" id="furnitureSettingsWidget" style="display:flex";>
+                <h2>Furniture Settings</h2>
+                <p style="font-size: 15px; margin-bottom: 5px;">Size:<span id="sizeDisplay">100</span></p>
+                <input type="range" id="sizeSlider" min="10" max="200" value="100" style="width: 100;">
             </div>
             
             <div class="toolbar properties-widget">

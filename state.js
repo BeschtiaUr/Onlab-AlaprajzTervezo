@@ -11,6 +11,7 @@ let bgImage = null;
 let bgOpacity = 1.0; // Alapértelmezett átlátszatlanság
 
 let wallThickness =20;
+let furnitureSize = 100; // Bútorok alapértelmezett mérete
 
 
 let currentTool = "walls"; 
