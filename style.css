@@ -142,6 +142,27 @@ body {
     border-color: #44A194;
 }
 
+.isDrawing-btn {
+    padding: 12px 15px;
+    background-color: #34495e;
+    color: #F4F0E4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+.isDrawing-btn.active {
+    background-color: #44A194;
+    color: #F4F0E4;
+    border-color: #44A194;
+}
+
+.isDrawing-btn:hover {
+    background-color: #357c73;
+}
+
 .canvas-container {
     flex-grow: 1;
     position: relative;

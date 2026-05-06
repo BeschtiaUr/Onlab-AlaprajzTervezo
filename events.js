@@ -61,7 +61,8 @@ canvas.addEventListener('mousedown', (e) => {
             type: selectedFurnitureType,
             x: clickPos.x,
             y: clickPos.y,
-            angle: currentFurnitureAngle // Forgatott szöggel rakjuk le
+            angle: currentFurnitureAngle, // Forgatott szöggel rakjuk le
+            size : furnitureSize
         });
         draw();
         updateDataBar();
@@ -82,7 +83,7 @@ canvas.addEventListener('mousedown', (e) => {
             if (currentTool === 'windows') {
                 windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
             } else {
-                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50 });
+                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, flipped: false });
             }
             draw();
         }
@@ -169,10 +170,38 @@ canvas.addEventListener('mousemove', (e) => {
             foundFurnitureHover = i; break;
         }
     }
+
+    let foundWindowHover = null;
+    for (let i = 0; i < windows.length; i++) {
+        const win = windows[i];
+        const w = walls[win.wallIndex];
+        const n1 = nodes[w.startNode];
+        const n2 = nodes[w.endNode];
+        const x = n1.x + (n2.x - n1.x) * win.position;
+        const y = n1.y + (n2.y - n1.y) * win.position;
+        const dist = Math.sqrt(Math.pow(mousePosition.x - x, 2) + Math.pow(mousePosition.y - y, 2));
+        if (dist < 30) { foundWindowHover = i; break; }
+    }
+
+    let foundDoorHover = null;
+    for (let i = 0; i < doors.length; i++) {
+        const door = doors[i];
+        const w = walls[door.wallIndex];
+        const n1 = nodes[w.startNode];
+        const n2 = nodes[w.endNode];
+        const x = n1.x + (n2.x - n1.x) * door.position;
+        const y = n1.y + (n2.y - n1.y) * door.position;
+        const dist = Math.sqrt(Math.pow(mousePosition.x - x, 2) + Math.pow(mousePosition.y - y, 2));
+        if (dist < 25) { foundDoorHover = i; break; }
+    }
     
-    if (hoveredWallIndex !== foundHover || hoveredFurnitureIndex !== foundFurnitureHover) {
+    if (hoveredWallIndex !== foundHover || hoveredFurnitureIndex !== foundFurnitureHover ||
+        hoveredWindowIndex !== foundWindowHover || hoveredDoorIndex !== foundDoorHover) 
+        {
         hoveredWallIndex = foundHover;
         hoveredFurnitureIndex = foundFurnitureHover;
+        hoveredWindowIndex = foundWindowHover;
+        hoveredDoorIndex = foundDoorHover;
         draw();
     }
 
@@ -313,6 +342,8 @@ window.addEventListener('keydown', (e) => {
             furnitures[draggedFurnitureIndex].angle += angleChange;
         } else if (hoveredFurnitureIndex !== null) {
             furnitures[hoveredFurnitureIndex].angle += angleChange;
+        } else if (hoveredDoorIndex !== null) {
+            doors[hoveredDoorIndex].flipped = !doors[hoveredDoorIndex].flipped;
         } else if (currentTool === 'furniture') {
             currentFurnitureAngle += angleChange;
         }
@@ -353,6 +384,12 @@ clearBtn.addEventListener('click', () => {
     draggedFurnitureIndex = null;
     selectedFurnitureType = null;
     currentFurnitureAngle = 0;
+
+    hoveredDoorIndex = null;
+    draggedDoorIndex = null;
+
+    hoveredWindowIndex = null;
+    draggedWindowIndex = null;
     
     draw();
     updateDataBar();
@@ -369,6 +406,21 @@ ninetyDegreeBtn.addEventListener('click', () => {
         ninetyDegreeBtn.innerText = "90° mode OFF";
     }
 });
+
+const isDrawingBtn = document.getElementById('isDrawingBtn');
+isDrawingBtn.addEventListener('click', () => {
+    isShowingPlans = !isShowingPlans;
+    if (isShowingPlans) {
+        isDrawingBtn.classList.add('active');
+        isDrawingBtn.innerText = "Show Plans: On";
+        
+    } else {
+        isDrawingBtn.classList.remove('active');
+        isDrawingBtn.innerText = "Show Plans: Off";
+    }
+    draw();
+});
+
 
 function updateDataBar() {
     const infoType = document.getElementById('infoType');
@@ -397,7 +449,17 @@ function updateDataBar() {
         
         infoType.innerText = typeName;
         infoSize.innerText = size;
-    } 
+    }
+    else if (hoveredDoorIndex !== null) {
+        const door = doors[hoveredDoorIndex];
+        infoType.innerText = "Door";
+        infoSize.innerText = "50 x " + wallThickness + " px";
+    }
+    else if (hoveredWindowIndex !== null) {
+        const window = windows[hoveredWindowIndex];
+        infoType.innerText = "Window";
+        infoSize.innerText = "60 x " + wallThickness + " px";
+    }
     else {
         infoType.innerText = "-";
         infoSize.innerText = "-";

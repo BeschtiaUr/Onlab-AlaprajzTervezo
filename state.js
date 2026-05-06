@@ -18,6 +18,7 @@ let currentTool = "walls";
 
 let isDrawing = false;
 let isNinetyDegreeMode = false; 
+let isShowingPlans = true;
 let currentStartNode = null;
 let mousePosition = { x: 0, y: 0 };
 const SNAP_DISTANCE = 15; 
@@ -35,5 +36,12 @@ let selectedFurnitureType = null; // Milyen bútort választottunk a jobb menüb
 
 let hoveredFurnitureIndex = null; // Törléshez/Mozgatáshoz
 let draggedFurnitureIndex = null; // Mozgatáshoz
+
+let hoveredDoorIndex = null;
+let draggedDoorIndex = null;
+
+let hoveredWindowIndex = null;
+let draggedWindowIndex = null;
+
 
 let currentFurnitureAngle = 0; // A kezedben lévő bútor aktuális forgatási szöge
