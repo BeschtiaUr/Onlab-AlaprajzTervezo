@@ -88,11 +88,11 @@ function drawDoor(x, y, angle, length, t) {
 }
 
 // ---  BÚTOROK RAJZOLÁSA ---
-function drawFurnitureItem(x, y, type, angle, isHover = false) {
+function drawFurnitureItem(x, y, type, angle, customSize, isHover = false) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
-    const size = furnitureSize/100; // Használjuk a globális bútor méretet
+    const size = customSize/100; // Használjuk a globális bútor méretet
 
     ctx.globalAlpha = isHover ? 0.5 : 1.0; // Ha csak előnézet, legyen átlátszó
     ctx.lineWidth = 2;
@@ -258,13 +258,14 @@ function draw() {
             } else {
                 ctx.shadowBlur = 0;
             }
-            drawFurnitureItem(f.x, f.y, f.type, f.angle);
+            const currentSize = f.size || 100; 
+            drawFurnitureItem(f.x, f.y, f.type, f.angle, currentSize);            
             ctx.shadowBlur = 0; // Reset
         });
 
         // 6. BÚTOR ELŐNÉZET (Hover)
         if (currentTool === 'furniture' && selectedFurnitureType) {
-            drawFurnitureItem(mousePosition.x, mousePosition.y, selectedFurnitureType, currentFurnitureAngle, true);
+            drawFurnitureItem(mousePosition.x, mousePosition.y, selectedFurnitureType, currentFurnitureAngle, furnitureSize, true);
         }
 
         //PIROS CSOMÓPONTOK
