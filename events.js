@@ -23,6 +23,15 @@ function setActiveTool(toolId, btnElement, extraType = null) {
             wallSettingsWidget.style.display = 'none';
         }
     }
+
+    const furnitureSettingsWidget = document.getElementById('furnitureSettingsWidget');
+    if(furnitureSettingsWidget){
+        if(toolId === 'furniture'){
+            furnitureSettingsWidget.style.display = 'flex';
+        } else {
+            furnitureSettingsWidget.style.display = 'none';
+        }
+    }
     
     isDrawing = false;
     currentStartNode = null;

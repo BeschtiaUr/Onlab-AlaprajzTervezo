@@ -158,6 +158,10 @@ body {
     color: #F4F0E4;
     border-color: #44A194;
 }
+.isDrawing-btn:not(.active) {
+    background-color: #34495e;
+    color: #F4F0E4;
+}
 
 .isDrawing-btn:hover {
     background-color: #357c73;
