@@ -148,6 +148,9 @@ function drawBackgroundImage() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
+    ctx.fillStyle = '#f4f0e4'; // Világos háttér a vászonnak
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     drawBackgroundImage(); // Ha van háttérkép, rajzoljuk ki először
 
     drawGrid();

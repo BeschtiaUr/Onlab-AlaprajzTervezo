@@ -55,105 +55,108 @@ furnitureBtns.forEach(btn => {
 // --- EGÉR LENYOMÁSA ---
 canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; 
-    let clickPos = getMousePos(e);
 
-    // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
-    if (hoveredFurnitureIndex !== null) {
-        draggedFurnitureIndex = hoveredFurnitureIndex;
-        lastMousePos = { x: clickPos.x, y: clickPos.y };
-        return;
-    }
+    //if(isDrawingBtn.classList.contains('active')) {
+        let clickPos = getMousePos(e);
 
-    // 2. Új bútor lerakása
-    if (currentTool === 'furniture') {
-        furnitures.push({
-            type: selectedFurnitureType,
-            x: clickPos.x,
-            y: clickPos.y,
-            angle: currentFurnitureAngle, // Forgatott szöggel rakjuk le
-            size : furnitureSize
-        });
-        draw();
-        updateDataBar();
-        return;
-    }
+        // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
+        if (hoveredFurnitureIndex !== null) {
+            draggedFurnitureIndex = hoveredFurnitureIndex;
+            lastMousePos = { x: clickPos.x, y: clickPos.y };
+            return;
+        }
 
-    // 3. Ablak vagy ajtó
-    if (currentTool === 'windows' || currentTool === 'doors') {
-        if (hoveredWallIndex !== null) {
-            const w = walls[hoveredWallIndex];
-            const n1 = nodes[w.startNode];
-            const n2 = nodes[w.endNode];
-            
-            let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
-            let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
-            t = Math.max(0.05, Math.min(0.95, t)); 
-            
-            if (currentTool === 'windows') {
-                windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
-            } else {
-                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
-            }
+        // 2. Új bútor lerakása
+        if (currentTool === 'furniture') {
+            furnitures.push({
+                type: selectedFurnitureType,
+                x: clickPos.x,
+                y: clickPos.y,
+                angle: currentFurnitureAngle, // Forgatott szöggel rakjuk le
+                size : furnitureSize
+            });
             draw();
-        }
-        return;
-    }
-
-    // 4. Fal rajzolása / mozgatása
-    if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
-        const start = nodes[currentStartNode];
-        clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
-    }
-
-    const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
-
-    if (!isDrawing) {
-        // Ha egy meglevő csomópontra kattintott, indul a rajzolás
-        if (snappedNodeIndex !== null) {
-            isDrawing = true;
-            currentStartNode = snappedNodeIndex;
-            return; 
+            updateDataBar();
+            return;
         }
 
-        // Ha falra kattintott, "feljegyezzük", de NEM rajzolunk azonnal
-        if (hoveredWallIndex !== null) {
-            maybeDraggingWallIndex = hoveredWallIndex; 
-            mouseDownPos = { x: clickPos.x, y: clickPos.y }; 
-            return; // Kilépünk! Várunk, hogy elhúzza-e (húzás) vagy elengedi-e (rajzolás)
-        }
-
-        // Ha üres helyre kattintott, kezdünk rajzolni egy új falat
-        isDrawing = true;
-        nodes.push({ x: clickPos.x, y: clickPos.y });
-        currentStartNode = nodes.length - 1;
-
-    } else {
-        // Ha már rajzolunk (isDrawing === true), akkor befejezzük az aktuális falat
-        let endNodeIndex;
-        if (snappedNodeIndex !== null) {
-            endNodeIndex = snappedNodeIndex; // Hozzátapad egy meglévő ponthoz
-        } else {
-            // Rátapadás egy meglévő falra
-            let finalX = clickPos.x;
-            let finalY = clickPos.y;
-            if(hoveredWallIndex !== null){
+        // 3. Ablak vagy ajtó
+        if (currentTool === 'windows' || currentTool === 'doors') {
+            if (hoveredWallIndex !== null) {
                 const w = walls[hoveredWallIndex];
                 const n1 = nodes[w.startNode];
                 const n2 = nodes[w.endNode];
+                
                 let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
                 let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
-                t = Math.max(0, Math.min(1, t)); 
-                finalX = n1.x + t * (n2.x - n1.x);
-                finalY = n1.y + t * (n2.y - n1.y);
+                t = Math.max(0.05, Math.min(0.95, t)); 
+                
+                if (currentTool === 'windows') {
+                    windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
+                } else {
+                    doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
+                }
+                draw();
+            }
+            return;
+        }
+
+        // 4. Fal rajzolása / mozgatása
+        if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
+            const start = nodes[currentStartNode];
+            clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
+        }
+
+        const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
+
+        if (!isDrawing) {
+            // Ha egy meglevő csomópontra kattintott, indul a rajzolás
+            if (snappedNodeIndex !== null) {
+                isDrawing = true;
+                currentStartNode = snappedNodeIndex;
+                return; 
             }
 
-            nodes.push({ x: finalX, y: finalY });
-            endNodeIndex = nodes.length - 1;
+            // Ha falra kattintott, "feljegyezzük", de NEM rajzolunk azonnal
+            if (hoveredWallIndex !== null) {
+                maybeDraggingWallIndex = hoveredWallIndex; 
+                mouseDownPos = { x: clickPos.x, y: clickPos.y }; 
+                return; // Kilépünk! Várunk, hogy elhúzza-e (húzás) vagy elengedi-e (rajzolás)
+            }
+
+            // Ha üres helyre kattintott, kezdünk rajzolni egy új falat
+            isDrawing = true;
+            nodes.push({ x: clickPos.x, y: clickPos.y });
+            currentStartNode = nodes.length - 1;
+
+        } else {
+            // Ha már rajzolunk (isDrawing === true), akkor befejezzük az aktuális falat
+            let endNodeIndex;
+            if (snappedNodeIndex !== null) {
+                endNodeIndex = snappedNodeIndex; // Hozzátapad egy meglévő ponthoz
+            } else {
+                // Rátapadás egy meglévő falra
+                let finalX = clickPos.x;
+                let finalY = clickPos.y;
+                if(hoveredWallIndex !== null){
+                    const w = walls[hoveredWallIndex];
+                    const n1 = nodes[w.startNode];
+                    const n2 = nodes[w.endNode];
+                    let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
+                    let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
+                    t = Math.max(0, Math.min(1, t)); 
+                    finalX = n1.x + t * (n2.x - n1.x);
+                    finalY = n1.y + t * (n2.y - n1.y);
+                }
+
+                nodes.push({ x: finalX, y: finalY });
+                endNodeIndex = nodes.length - 1;
+            }
+            walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
+            currentStartNode = endNodeIndex; 
         }
-        walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
-        currentStartNode = endNodeIndex; 
-    }
-    draw();
+        draw();
+   // }
 });
 
 // --- EGÉR MOZGATÁSA ---
@@ -218,7 +221,7 @@ canvas.addEventListener('mousemove', (e) => {
         const dx = mousePosition.x - mouseDownPos.x;
         const dy = mousePosition.y - mouseDownPos.y;
         
-        // Ha legalább 5 pixelt elhúztad az egeret lenyomott gombbal:
+        // Ha legalább 5 pixelt elhúzod az egeret lenyomott gombbal
         if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
             draggedWallIndex = maybeDraggingWallIndex; // Elindítjuk a húzást
             lastMousePos = { x: mouseDownPos.x, y: mouseDownPos.y };
@@ -364,9 +367,9 @@ window.addEventListener('keydown', (e) => {
 });
 
 
-// --- MENTÉS GOMB BEKÖTÉSE (Már biztonságosan kívül van) ---
-if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
+// --- MENTÉS GOMB BEKÖTÉSE---
+if (saveToCloudBtn) {
+    saveToCloudBtn.addEventListener('click', () => {
         // Ellenőrizzük, hogy létezik-e az auth.js-ben megírt saveFloorplan függvény
         if (typeof saveFloorplan === "function") {
             saveFloorplan();
@@ -533,6 +536,49 @@ if(sizeSlider){
         }
         draw();
     })
+}
+
+// --- PNG LETÖLTÉS ---
+const saveAsPngBtn = document.getElementById('saveAsPNGBtn');
+if (saveAsPngBtn) {
+    saveAsPngBtn.addEventListener('click', () => {
+        //Kimentjük a vásznat képként
+        const imageData = canvas.toDataURL("image/png");
+        
+        //Létrehozunk egy rejtett linket a háttérben
+        const link = document.createElement('a');
+        link.download = 'floorplan.png'; // A letöltött fájl neve
+        link.href = imageData;
+        
+        //Rákattintunk a rejtett linkre (ez indítja a letöltést)
+        link.click();
+    });
+}
+
+// --- PDF LETÖLTÉS ---
+const saveAsPDFBtn = document.getElementById('saveAsPDFBtn');
+if (saveAsPDFBtn) {
+    saveAsPDFBtn.addEventListener('click', () => {
+        // Ellenőrizzük, hogy a jsPDF könyvtár betöltött-e
+        if (!window.jspdf) {
+            alert("Hiba a PDF modul betöltésekor. Kérlek frissítsd az oldalt!");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        
+        // Létrehozunk egy PDF dokumentumot
+        const pdf = new jsPDF('l', 'px', [canvas.width, canvas.height]);
+        
+        // Kimentjük a képet a vászonról
+        const imageData = canvas.toDataURL("image/jpeg", 1.0);
+        
+        // Rárakjuk a képet a PDF lapra
+        pdf.addImage(imageData, 'JPEG', 0, 0, canvas.width, canvas.height);
+        
+        // Letöltés
+        pdf.save("floorplan.pdf");
+    });
 }
 
 // PROGRAM INDÍTÁSA
