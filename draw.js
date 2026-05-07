@@ -48,10 +48,14 @@ function drawWindow(x, y, angle, length, t) {
 }
 
 //AJTÓ RAJZOLÁSA
-function drawDoor(x, y, angle, length, t) {
+function drawDoor(x, y, angle, length, t, isMirrored = false) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
+
+    if (isMirrored) {
+        ctx.scale(-1, 1); 
+    }
 
     const halfT = t / 2;
 
@@ -204,10 +208,15 @@ function draw() {
             // 1. Az X és Y mindig marad az eredeti, hogy a falon maradjon az ajtó!
             const x = n1.x + (n2.x - n1.x) * door.position;
             const y = n1.y + (n2.y - n1.y) * door.position;
+
+            const rotation = door.doorRotation || 0; // Alapértelmezett forgatás 0
+
+            const isFlipped = (rotation === 1 || rotation === 3);
+            const isMirrored = (rotation === 2 || rotation === 3);
             
             // 2. Csak a szöget forgatjuk meg 180 fokkal (Math.PI)
             const baseAngle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
-            const angle = door.flipped ? baseAngle + Math.PI : baseAngle;
+            const angle = isFlipped ? baseAngle + Math.PI : baseAngle;
 
             if (index === hoveredDoorIndex || index === draggedDoorIndex) {
                 ctx.shadowColor = '#ff4444';
@@ -215,7 +224,7 @@ function draw() {
             } else {
                 ctx.shadowBlur = 0;
             }
-            drawDoor(x, y, angle, door.length, currentT);
+            drawDoor(x, y, angle, door.length, currentT, isMirrored);
             ctx.shadowBlur = 0;
         });
 

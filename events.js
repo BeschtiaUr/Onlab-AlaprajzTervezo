@@ -92,7 +92,7 @@ canvas.addEventListener('mousedown', (e) => {
             if (currentTool === 'windows') {
                 windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
             } else {
-                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, flipped: false });
+                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
             }
             draw();
         }
@@ -352,7 +352,10 @@ window.addEventListener('keydown', (e) => {
         } else if (hoveredFurnitureIndex !== null) {
             furnitures[hoveredFurnitureIndex].angle += angleChange;
         } else if (hoveredDoorIndex !== null) {
-            doors[hoveredDoorIndex].flipped = !doors[hoveredDoorIndex].flipped;
+            if(doors[hoveredDoorIndex].doorRotation === undefined) {
+                doors[hoveredDoorIndex].doorRotation = 0;
+            }
+            doors[hoveredDoorIndex].doorRotation = (doors[hoveredDoorIndex].doorRotation + 1) % 4; // 0, 1, 2, 3 értékek között váltogat
         } else if (currentTool === 'furniture') {
             currentFurnitureAngle += angleChange;
         }
