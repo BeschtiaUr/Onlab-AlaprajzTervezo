@@ -37,6 +37,8 @@ function setActiveTool(toolId, btnElement, extraType = null) {
     currentStartNode = null;
     draggedWallIndex = null;
     draggedFurnitureIndex = null;
+    draggedWindowIndex = null;
+    draggedDoorIndex = null;
     cleanUpNodes();
     draw();
 }
@@ -62,6 +64,16 @@ canvas.addEventListener('mousedown', (e) => {
         // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
         if (hoveredFurnitureIndex !== null) {
             draggedFurnitureIndex = hoveredFurnitureIndex;
+            lastMousePos = { x: clickPos.x, y: clickPos.y };
+            return;
+        }
+        if (hoveredWindowIndex !== null) {
+            draggedWindowIndex = hoveredWindowIndex;
+            lastMousePos = { x: clickPos.x, y: clickPos.y };
+            return;
+        }
+        if (hoveredDoorIndex !== null) {
+            draggedDoorIndex = hoveredDoorIndex;
             lastMousePos = { x: clickPos.x, y: clickPos.y };
             return;
         }
@@ -217,6 +229,10 @@ canvas.addEventListener('mousemove', (e) => {
         draw();
     }
 
+    if(hoveredWindowIndex !== null || hoveredDoorIndex !== null){
+        hoveredWallIndex = null;
+    }
+
     if(maybeDraggingWallIndex !== null){
         const dx = mousePosition.x - mouseDownPos.x;
         const dy = mousePosition.y - mouseDownPos.y;
@@ -235,6 +251,45 @@ canvas.addEventListener('mousemove', (e) => {
         const dy = mousePosition.y - lastMousePos.y;
         furnitures[draggedFurnitureIndex].x += dx;
         furnitures[draggedFurnitureIndex].y += dy;
+        lastMousePos = { x: mousePosition.x, y: mousePosition.y };
+        draw();
+        updateDataBar();
+        return; 
+    }
+
+    //ABLAK/AJTÓ MOZGATÁSA
+    if (draggedWindowIndex !== null || draggedDoorIndex !== null) {
+        let parentWall;
+        if(draggedWindowIndex !== null){
+            if(foundHover !== null){
+                parentWall = walls[foundHover];
+                windows[draggedWindowIndex].wallIndex = foundHover;
+            } else 
+            parentWall= walls[windows[draggedWindowIndex].wallIndex];
+        }
+        else if(draggedDoorIndex !== null){
+            if(foundHover !== null){
+                parentWall = walls[foundHover];
+                doors[draggedDoorIndex].wallIndex = foundHover;
+            } else 
+            parentWall = walls[doors[draggedDoorIndex].wallIndex];
+        }
+
+        const n1 = nodes[parentWall.startNode];
+        const n2 = nodes[parentWall.endNode];
+
+        let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
+
+        let t = ((mousePosition.x - n1.x) * (n2.x - n1.x) + (mousePosition.y - n1.y) * (n2.y - n1.y)) / len_sq;
+        t = Math.max(0.05, Math.min(0.95, t)); 
+
+        if(draggedWindowIndex !== null){
+            windows[draggedWindowIndex].position = t;
+        }
+        else if(draggedDoorIndex !== null){
+            doors[draggedDoorIndex].position = t;
+        }
+
         lastMousePos = { x: mousePosition.x, y: mousePosition.y };
         draw();
         updateDataBar();
@@ -294,6 +349,8 @@ window.addEventListener('mouseup', () => {
 
     draggedWallIndex = null; 
     draggedFurnitureIndex = null; 
+    draggedWindowIndex = null;
+    draggedDoorIndex = null;
     draw(); 
 });
 
@@ -343,6 +400,16 @@ window.addEventListener('keydown', (e) => {
         else if (hoveredFurnitureIndex !== null) {
             furnitures.splice(hoveredFurnitureIndex, 1);
             hoveredFurnitureIndex = null;
+            draw();
+        }
+        else if (hoveredWindowIndex !== null) {
+            windows.splice(hoveredWindowIndex, 1);
+            hoveredWindowIndex = null;
+            draw();
+        }
+        else if(hoveredDoorIndex !== null){
+            doors.splice(hoveredDoorIndex, 1);
+            hoveredDoorIndex = null;
             draw();
         }
     }
