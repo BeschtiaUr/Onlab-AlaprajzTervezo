@@ -1,6 +1,9 @@
 const canvas = document.getElementById('floorplan');
 const ctx = canvas.getContext('2d');
 
+let currentPlanId = null; // Holds the Firestore Document ID
+let currentPlanName = "My New Plan"; // Optional: Let users name their plans
+
 let nodes = []; // Csomópontok {x, y}
 let walls = []; // Falak {startNode, endNode}
 

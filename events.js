@@ -3,6 +3,7 @@ const windowsBtn = document.getElementById('windowsBtn');
 const doorsBtn = document.getElementById('doorsBtn');
 const furnitureBtns = document.querySelectorAll('.furniture-btn'); 
 const exportBtn = document.getElementById('exportBtn');
+const backToMenuBtn = document.getElementById('backToMenuBtn');
 
 function setActiveTool(toolId, btnElement, extraType = null) {
     currentTool = toolId;
@@ -437,12 +438,24 @@ window.addEventListener('keydown', (e) => {
 // --- MENTÉS GOMB BEKÖTÉSE---
 if (saveToCloudBtn) {
     saveToCloudBtn.addEventListener('click', () => {
-        // Ellenőrizzük, hogy létezik-e az auth.js-ben megírt saveFloorplan függvény
+        // Ellenőrizzük, hogy létezik-e a saveFloorplan függvény
         if (typeof saveFloorplan === "function") {
             saveFloorplan();
         } else {
             console.error("A saveFloorplan függvény nem található!");
             alert("Hiba: A mentés funkció még nincs betöltve.");
+        }
+    });
+}
+
+if (backToMenuBtn) {
+    backToMenuBtn.addEventListener('click', () => {
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('dashboard-screen').style.display = 'flex';
+        
+        // Refresh the list of plans in case we just saved a new one
+        if (auth.currentUser) {
+            fetchUserPlans(auth.currentUser.uid);
         }
     });
 }

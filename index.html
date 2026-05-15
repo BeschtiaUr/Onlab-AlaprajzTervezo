@@ -28,6 +28,16 @@
         </div>
     </div>
 
+    <div id="dashboard-screen" class="login-wrapper" style="display: none;">
+        <div class="login-box" style="width: 500px;">
+            <h2>My Floor Plans</h2>
+            
+            <div id="saved-plans-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+            <button id="createNewPlanBtn" class="tool-btn active" style="width: 100%; text-align: center;">+ Create New Plan</button>
+            <button id="dashboardLogoutBtn" class="clear-btn" style="background-color: #34495e; width: 100%; margin-top: 10px;">Logout</button>
+        </div>
+    </div>
+
     <div class="main-wrapper" id="main-app" style="display: none;">
         
         <div class="toolbar left-toolbar">
@@ -50,7 +60,8 @@
             <button id="isDrawingBtn" class="isDrawing-btn" style="background-color: #44A194;width: 100%; text-align: center; margin-top: 10px;">Show Plans: On</button>
 
             <div class="separator"></div>
-            <button id="clearBtn" class="clear-btn">Clear all</button>           
+            <button id="clearBtn" class="clear-btn">Clear all</button>
+            <button id="backToMenuBtn" class="clear-btn" style="background-color: #f39c12; margin-top: 10px;">Back to Menu</button>           
             <button id="logoutBtn" class="clear-btn" style="background-color: #34495e; margin-top: 10px;">Logout</button>
         </div>
         
