@@ -64,16 +64,19 @@ canvas.addEventListener('mousedown', (e) => {
 
         // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
         if (hoveredFurnitureIndex !== null) {
+            saveStateToHistory();
             draggedFurnitureIndex = hoveredFurnitureIndex;
             lastMousePos = { x: clickPos.x, y: clickPos.y };
             return;
         }
         if (hoveredWindowIndex !== null) {
+            saveStateToHistory();
             draggedWindowIndex = hoveredWindowIndex;
             lastMousePos = { x: clickPos.x, y: clickPos.y };
             return;
         }
         if (hoveredDoorIndex !== null) {
+            saveStateToHistory();
             draggedDoorIndex = hoveredDoorIndex;
             lastMousePos = { x: clickPos.x, y: clickPos.y };
             return;
@@ -81,6 +84,7 @@ canvas.addEventListener('mousedown', (e) => {
 
         // 2. Új bútor lerakása
         if (currentTool === 'furniture') {
+            saveStateToHistory();
             furnitures.push({
                 type: selectedFurnitureType,
                 x: clickPos.x,
@@ -105,8 +109,10 @@ canvas.addEventListener('mousedown', (e) => {
                 t = Math.max(0.05, Math.min(0.95, t)); 
                 
                 if (currentTool === 'windows') {
+                    saveStateToHistory();
                     windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
                 } else {
+                    saveStateToHistory();
                     doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
                 }
                 draw();
@@ -161,10 +167,10 @@ canvas.addEventListener('mousedown', (e) => {
                     finalX = n1.x + t * (n2.x - n1.x);
                     finalY = n1.y + t * (n2.y - n1.y);
                 }
-
                 nodes.push({ x: finalX, y: finalY });
                 endNodeIndex = nodes.length - 1;
             }
+            saveStateToHistory();
             walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
             currentStartNode = endNodeIndex; 
         }
@@ -303,8 +309,8 @@ canvas.addEventListener('mousemove', (e) => {
             const start = nodes[currentStartNode];
             mousePosition = applyNinetyDegrees(start.x, start.y, mousePosition.x, mousePosition.y);
         }
-        
-        if (draggedWallIndex !== null) {
+
+        if (draggedWallIndex !== null) {            
             const dx = mousePosition.x - lastMousePos.x;
             const dy = mousePosition.y - lastMousePos.y;
             
@@ -381,10 +387,18 @@ window.addEventListener('wheel', (e) => {
     }
 }, { passive: false });
 
-// --- BILLENTYŰZET: TÖRLÉS ÉS FORGATÁS ---
+// --- BILLENTYŰZET: TÖRLÉS, FORGATÁS ÉS UNDO---
 window.addEventListener('keydown', (e) => {
+
+    //UNDO (Ctrl+Z / Cmd+Z)
+    if(e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        undo();
+        return;
+    }
     // TÖRLÉS (Delete / Backspace)
     if (e.key === 'Delete' || e.key === 'Backspace') {
+        saveStateToHistory();
         if (hoveredWallIndex !== null && currentTool === 'walls') {
             const deletedIndex = hoveredWallIndex;
             walls.splice(deletedIndex, 1); 
@@ -399,16 +413,19 @@ window.addEventListener('keydown', (e) => {
         } 
         // Bútor törlése
         else if (hoveredFurnitureIndex !== null) {
+            saveStateToHistory();
             furnitures.splice(hoveredFurnitureIndex, 1);
             hoveredFurnitureIndex = null;
             draw();
         }
         else if (hoveredWindowIndex !== null) {
+            saveStateToHistory();
             windows.splice(hoveredWindowIndex, 1);
             hoveredWindowIndex = null;
             draw();
         }
         else if(hoveredDoorIndex !== null){
+            saveStateToHistory();
             doors.splice(hoveredDoorIndex, 1);
             hoveredDoorIndex = null;
             draw();
@@ -462,7 +479,8 @@ if (backToMenuBtn) {
 
 // --- EGYÉB GOMBOK ÉS FÜGGVÉNYEK ---
 const clearBtn = document.getElementById('clearBtn');
-clearBtn.addEventListener('click', () => {        
+clearBtn.addEventListener('click', () => {      
+    saveStateToHistory();
     nodes.length = 0; 
     walls.length = 0;
     windows.length = 0; 

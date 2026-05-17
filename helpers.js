@@ -61,3 +61,39 @@ function applyNinetyDegrees(startX, startY, currentX, currentY) {
         return { x: startX, y: currentY }; 
     }
 }
+
+function saveStateToHistory(){
+    const stateCopy = {
+        nodes: JSON.parse(JSON.stringify(nodes)),
+        walls: JSON.parse(JSON.stringify(walls)),
+        windows: JSON.parse(JSON.stringify(windows)),
+        doors: JSON.parse(JSON.stringify(doors)),
+        furnitures: JSON.parse(JSON.stringify(furnitures))
+    };
+    historyStack.push(stateCopy);
+    if(historyStack.length > 20) historyStack.shift(); // Max 20 állapot a stack-ben
+}
+
+function undo() {
+    if(historyStack.length === 0) return; // Nincs mit visszavonni
+    const lastState = historyStack.pop();
+
+    nodes.length = 0; nodes.push(...lastState.nodes);
+    walls.length = 0; walls.push(...lastState.walls);
+    windows.length = 0; windows.push(...lastState.windows);
+    doors.length = 0; doors.push(...lastState.doors);
+    furnitures.length = 0; furnitures.push(...lastState.furnitures);
+
+    isDrawing = false;
+    currentStartNode = null;
+    maybeDraggingWallIndex = null;
+    draggedWallIndex = null;
+    draggedFurnitureIndex = null;
+    draggedWindowIndex = null;
+    draggedDoorIndex = null;
+
+    cleanUpNodes();
+    
+    draw();
+    if (typeof updateDataBar === "function") updateDataBar();
+}

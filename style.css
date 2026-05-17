@@ -39,11 +39,11 @@ body {
 .toolbar h2 {
     margin-top: 0;
     border-bottom: 2px solid #44A194;
-    padding-bottom: 10px;
+    padding-bottom: 6px;
 }
 
 .tool-btn {
-    padding: 12px 15px;
+    padding: 7px 10px;
     background-color: #34495e;
     color: #F4F0E4;
     border: none;
@@ -112,13 +112,14 @@ body {
 }
 
 .save-btn {
-    padding: 10px 15px;
+    padding: 7px 10px;
     background-color: #537D96;
     color: white;
     border: 3px solid #34495e;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    transition: background 0.2s;
 }
 .save-btn:hover {
     background-color: #357c73;
@@ -127,13 +128,14 @@ body {
 
 .clear-btn {
     margin-top: auto;
-    padding: 10px 15px;
+    padding: 7px 10px;
     background-color: #EC8F8D;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    transition: background 0.2s;
 }
 
 .clear-btn:hover {
@@ -141,13 +143,14 @@ body {
 }
 
 .ninety-degree-btn {
-    padding: 10px 15px;
+    padding: 7px 10px;
     background-color: #F4F0E4;
     border: 2px solid #F4F0E4;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
     color: #333;
+    transition: background 0.2s;
 }
 
 .ninety-degree-btn.active {
@@ -157,7 +160,7 @@ body {
 }
 
 .isDrawing-btn {
-    padding: 12px 15px;
+    padding: 7px 10px;
     background-color: #34495e;
     color: #F4F0E4;
     border: none;
