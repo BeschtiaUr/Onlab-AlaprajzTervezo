@@ -18,6 +18,12 @@ let furnitureSize = 100; // Bútorok alapértelmezett mérete
 
 let historyStack = [];
 
+let currentFloor = 0; // "lower" vagy "upper", alapértelmezett a földszint
+let floorPlans = [
+    { nodes: [], walls: [], windows: [], doors: [], furnitures: [], historyStack: [] },
+    { nodes: [], walls: [], windows: [], doors: [], furnitures: [], historyStack: [] }
+];
+
 let currentTool = "walls"; 
 
 let isDrawing = false;

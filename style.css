@@ -63,6 +63,41 @@ body {
     font-weight: bold;
 }
 
+.floor-btn {
+    padding: 7px 10px;
+    background-color: #34495e;
+    color: #F4F0E4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+.floor-btn:hover {
+    background-color: #357c73;
+}
+.floor-indicator {
+    background-color: #357c73;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #F4F0E4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.floor-indicator p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.floor-indicator span {
+    font-weight: bold;
+}
+
 .right-sidebar {
     display: flex;
     flex-direction: column;

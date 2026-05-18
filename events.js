@@ -4,6 +4,8 @@ const doorsBtn = document.getElementById('doorsBtn');
 const furnitureBtns = document.querySelectorAll('.furniture-btn'); 
 const exportBtn = document.getElementById('exportBtn');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
+const switchToUpperFloorBtn = document.getElementById('switchToUpperFloorBtn');
+const switchToLowerFloorBtn = document.getElementById('switchToLowerFloorBtn');
 
 function setActiveTool(toolId, btnElement, extraType = null) {
     currentTool = toolId;
@@ -59,123 +61,121 @@ furnitureBtns.forEach(btn => {
 canvas.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return; 
 
-    //if(isDrawingBtn.classList.contains('active')) {
-        let clickPos = getMousePos(e);
+    let clickPos = getMousePos(e);
 
-        // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
-        if (hoveredFurnitureIndex !== null) {
-            saveStateToHistory();
-            draggedFurnitureIndex = hoveredFurnitureIndex;
-            lastMousePos = { x: clickPos.x, y: clickPos.y };
-            return;
-        }
-        if (hoveredWindowIndex !== null) {
-            saveStateToHistory();
-            draggedWindowIndex = hoveredWindowIndex;
-            lastMousePos = { x: clickPos.x, y: clickPos.y };
-            return;
-        }
-        if (hoveredDoorIndex !== null) {
-            saveStateToHistory();
-            draggedDoorIndex = hoveredDoorIndex;
-            lastMousePos = { x: clickPos.x, y: clickPos.y };
-            return;
-        }
+    // 1. Lerakott bútor megfogása (Bármelyik eszköz is van kiválasztva!)
+    if (hoveredFurnitureIndex !== null) {
+        saveStateToHistory();
+        draggedFurnitureIndex = hoveredFurnitureIndex;
+        lastMousePos = { x: clickPos.x, y: clickPos.y };
+        return;
+    }
+    if (hoveredWindowIndex !== null) {
+        saveStateToHistory();
+        draggedWindowIndex = hoveredWindowIndex;
+        lastMousePos = { x: clickPos.x, y: clickPos.y };
+        return;
+    }
+    if (hoveredDoorIndex !== null) {
+        saveStateToHistory();
+        draggedDoorIndex = hoveredDoorIndex;
+        lastMousePos = { x: clickPos.x, y: clickPos.y };
+        return;
+    }
 
-        // 2. Új bútor lerakása
-        if (currentTool === 'furniture') {
-            saveStateToHistory();
-            furnitures.push({
-                type: selectedFurnitureType,
-                x: clickPos.x,
-                y: clickPos.y,
-                angle: currentFurnitureAngle, // Forgatott szöggel rakjuk le
-                size : furnitureSize
-            });
+    // 2. Új bútor lerakása
+    if (currentTool === 'furniture') {
+        saveStateToHistory();
+        furnitures.push({
+            type: selectedFurnitureType,
+            x: clickPos.x,
+            y: clickPos.y,
+            angle: currentFurnitureAngle, // Forgatott szöggel rakjuk le
+            size : furnitureSize
+        });
+        draw();
+        updateDataBar();
+        return;
+    }
+
+    // 3. Ablak vagy ajtó
+    if (currentTool === 'windows' || currentTool === 'doors') {
+        if (hoveredWallIndex !== null) {
+            const w = walls[hoveredWallIndex];
+            const n1 = nodes[w.startNode];
+            const n2 = nodes[w.endNode];
+            
+            let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
+            let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
+            t = Math.max(0.05, Math.min(0.95, t)); 
+            
+            if (currentTool === 'windows') {
+                saveStateToHistory();
+                windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
+            } else {
+                saveStateToHistory();
+                doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
+            }
             draw();
-            updateDataBar();
-            return;
+        }
+        return;
+    }
+
+    // 4. Fal rajzolása / mozgatása
+    if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
+        const start = nodes[currentStartNode];
+        clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
+    }
+
+    const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
+
+    if (!isDrawing) {
+        // Ha egy meglevő csomópontra kattintott, indul a rajzolás
+        if (snappedNodeIndex !== null) {
+            isDrawing = true;
+            currentStartNode = snappedNodeIndex;
+            return; 
         }
 
-        // 3. Ablak vagy ajtó
-        if (currentTool === 'windows' || currentTool === 'doors') {
-            if (hoveredWallIndex !== null) {
+        // Ha falra kattintott, "feljegyezzük", de NEM rajzolunk azonnal
+        if (hoveredWallIndex !== null) {
+            maybeDraggingWallIndex = hoveredWallIndex; 
+            mouseDownPos = { x: clickPos.x, y: clickPos.y }; 
+            return; // Kilépünk! Várunk, hogy elhúzza-e (húzás) vagy elengedi-e (rajzolás)
+        }
+
+        // Ha üres helyre kattintott, kezdünk rajzolni egy új falat
+        isDrawing = true;
+        nodes.push({ x: clickPos.x, y: clickPos.y });
+        currentStartNode = nodes.length - 1;
+
+    } else {
+        // Ha már rajzolunk (isDrawing === true), akkor befejezzük az aktuális falat
+        let endNodeIndex;
+        if (snappedNodeIndex !== null) {
+            endNodeIndex = snappedNodeIndex; // Hozzátapad egy meglévő ponthoz
+        } else {
+            // Rátapadás egy meglévő falra
+            let finalX = clickPos.x;
+            let finalY = clickPos.y;
+            if(hoveredWallIndex !== null){
                 const w = walls[hoveredWallIndex];
                 const n1 = nodes[w.startNode];
                 const n2 = nodes[w.endNode];
-                
                 let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
                 let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
-                t = Math.max(0.05, Math.min(0.95, t)); 
-                
-                if (currentTool === 'windows') {
-                    saveStateToHistory();
-                    windows.push({ wallIndex: hoveredWallIndex, position: t, length: 60 });
-                } else {
-                    saveStateToHistory();
-                    doors.push({ wallIndex: hoveredWallIndex, position: t, length: 50, doorRotation: 0 });
-                }
-                draw();
+                t = Math.max(0, Math.min(1, t)); 
+                finalX = n1.x + t * (n2.x - n1.x);
+                finalY = n1.y + t * (n2.y - n1.y);
             }
-            return;
+            nodes.push({ x: finalX, y: finalY });
+            endNodeIndex = nodes.length - 1;
         }
-
-        // 4. Fal rajzolása / mozgatása
-        if (isNinetyDegreeMode && isDrawing && currentStartNode !== null) {
-            const start = nodes[currentStartNode];
-            clickPos = applyNinetyDegrees(start.x, start.y, clickPos.x, clickPos.y); 
-        }
-
-        const snappedNodeIndex = findClosestNode(clickPos.x, clickPos.y);
-
-        if (!isDrawing) {
-            // Ha egy meglevő csomópontra kattintott, indul a rajzolás
-            if (snappedNodeIndex !== null) {
-                isDrawing = true;
-                currentStartNode = snappedNodeIndex;
-                return; 
-            }
-
-            // Ha falra kattintott, "feljegyezzük", de NEM rajzolunk azonnal
-            if (hoveredWallIndex !== null) {
-                maybeDraggingWallIndex = hoveredWallIndex; 
-                mouseDownPos = { x: clickPos.x, y: clickPos.y }; 
-                return; // Kilépünk! Várunk, hogy elhúzza-e (húzás) vagy elengedi-e (rajzolás)
-            }
-
-            // Ha üres helyre kattintott, kezdünk rajzolni egy új falat
-            isDrawing = true;
-            nodes.push({ x: clickPos.x, y: clickPos.y });
-            currentStartNode = nodes.length - 1;
-
-        } else {
-            // Ha már rajzolunk (isDrawing === true), akkor befejezzük az aktuális falat
-            let endNodeIndex;
-            if (snappedNodeIndex !== null) {
-                endNodeIndex = snappedNodeIndex; // Hozzátapad egy meglévő ponthoz
-            } else {
-                // Rátapadás egy meglévő falra
-                let finalX = clickPos.x;
-                let finalY = clickPos.y;
-                if(hoveredWallIndex !== null){
-                    const w = walls[hoveredWallIndex];
-                    const n1 = nodes[w.startNode];
-                    const n2 = nodes[w.endNode];
-                    let len_sq = Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2);
-                    let t = ((clickPos.x - n1.x) * (n2.x - n1.x) + (clickPos.y - n1.y) * (n2.y - n1.y)) / len_sq;
-                    t = Math.max(0, Math.min(1, t)); 
-                    finalX = n1.x + t * (n2.x - n1.x);
-                    finalY = n1.y + t * (n2.y - n1.y);
-                }
-                nodes.push({ x: finalX, y: finalY });
-                endNodeIndex = nodes.length - 1;
-            }
-            saveStateToHistory();
-            walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
-            currentStartNode = endNodeIndex; 
-        }
-        draw();
-   // }
+        saveStateToHistory();
+        walls.push({ startNode: currentStartNode, endNode: endNodeIndex, thickness: wallThickness });
+        currentStartNode = endNodeIndex; 
+    }
+    draw();
 });
 
 // --- EGÉR MOZGATÁSA ---
@@ -477,6 +477,18 @@ if (backToMenuBtn) {
     });
 }
 
+if (switchToUpperFloorBtn) {
+    switchToUpperFloorBtn.addEventListener('click', () => {
+        switchFloor(currentFloor + 1); // Go up!
+    });
+}
+
+if (switchToLowerFloorBtn) {
+    switchToLowerFloorBtn.addEventListener('click', () => {
+        switchFloor(currentFloor - 1); // Go down!
+    });
+}
+
 // --- EGYÉB GOMBOK ÉS FÜGGVÉNYEK ---
 const clearBtn = document.getElementById('clearBtn');
 clearBtn.addEventListener('click', () => {      
@@ -534,6 +546,14 @@ isDrawingBtn.addEventListener('click', () => {
     draw();
 });
 
+function updateFloorIndicator() {
+    const floorIndicator = document.getElementById('currentFloorDisplay');
+    if (floorIndicator) {
+        floorIndicator.innerText = currentFloor + 1; // Emberi számozás (1, 2, ...)
+    } else {
+        console.error("Floor indicator element not found!");
+    }
+}
 
 function updateDataBar() {
     const infoType = document.getElementById('infoType');

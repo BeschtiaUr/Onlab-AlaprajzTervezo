@@ -62,8 +62,8 @@ function applyNinetyDegrees(startX, startY, currentX, currentY) {
     }
 }
 
-function saveStateToHistory(){
-    const stateCopy = {
+function saveStateToHistory() {
+        const stateCopy = {
         nodes: JSON.parse(JSON.stringify(nodes)),
         walls: JSON.parse(JSON.stringify(walls)),
         windows: JSON.parse(JSON.stringify(windows)),
@@ -96,4 +96,43 @@ function undo() {
     
     draw();
     if (typeof updateDataBar === "function") updateDataBar();
+}
+
+function switchFloor(targetIndex) {
+    // Biztonsági ellenőrzés: Létezik a kért emelet?
+    if (targetIndex < 0 || targetIndex >= floorPlans.length) return;
+    if (targetIndex === currentFloor) return;
+
+    // LÉPÉS 1: Elmentjük az aktuális vásznat a jelenlegi emelet memóriájába
+    floorPlans[currentFloor] = {
+        nodes: JSON.parse(JSON.stringify(nodes)),
+        walls: JSON.parse(JSON.stringify(walls)),
+        windows: JSON.parse(JSON.stringify(windows)),
+        doors: JSON.parse(JSON.stringify(doors)),
+        furnitures: JSON.parse(JSON.stringify(furnitures)),
+        historyStack: [...historyStack] // Az Undo memóriát is visszük!
+    };
+
+    // LÉPÉS 2: Átváltunk az új emeletre
+    currentFloor = targetIndex;
+    const data = floorPlans[currentFloor];
+
+    // LÉPÉS 3: Kicsomagoljuk az új emelet adatait a globális tömbökbe
+    nodes.length = 0; nodes.push(...data.nodes);
+    walls.length = 0; walls.push(...data.walls);
+    windows.length = 0; windows.push(...data.windows);
+    doors.length = 0; doors.push(...data.doors);
+    furnitures.length = 0; furnitures.push(...data.furnitures);
+    historyStack.length = 0; historyStack.push(...data.historyStack);
+
+    // LÉPÉS 4: Törlünk minden "éppen húzott" állapotot, hogy ne ragadjanak be
+    isDrawing = false;
+    currentStartNode = null;
+    hoveredWallIndex = null;
+    draggedWallIndex = null;
+    cleanUpNodes();
+
+    // LÉPÉS 5: Frissítjük a UI-t és újrarajzoljuk a vásznat
+    updateFloorIndicator();
+    draw();
 }
