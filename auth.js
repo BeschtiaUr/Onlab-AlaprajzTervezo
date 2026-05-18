@@ -28,12 +28,13 @@ const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
 
 createNewPlanBtn.addEventListener('click', () => {
     currentPlanId = null;
+    currentFloor = 0;
 
-    nodes.length = 0;
-    walls.length = 0;
-    furnitures.length = 0;
-    windows.length = 0;
-    doors.length = 0;
+    floorPlans = [
+        { nodes: [], walls: [], windows: [], doors: [], furnitures: [], historyStack: [] }
+    ];
+
+    nodes.length = 0; walls.length = 0; windows.length = 0; doors.length = 0; furnitures.length = 0; historyStack.length = 0;
 
     dashboardScreen.style.display = 'none';
     mainApp.style.display = 'flex';
@@ -160,13 +161,14 @@ function saveFloorplan() {
     const user = auth.currentUser;
     if (!user) return;
 
+    floorPlans[currentFloor] = {
+        nodes: nodes, walls: walls, windows: windows, doors: doors, furnitures: furnitures, historyStack: []
+    };
+
     const dataToSave = {
         userId: user.uid, 
-        nodes: nodes,
-        walls: walls,
-        windows: windows,
-        doors: doors,
-        furnitures: furnitures,
+        floorPlans: floorPlans, // Minden emelet mentése egyben
+        currentFloor: currentFloor, // Hogy tudjuk, melyik emelet volt megnyitva a mentéskor
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
@@ -193,20 +195,39 @@ function loadFloorplan(planID) {
                 const data = doc.data();
                 
                 // Csak akkor töltjük be, ha az adat létezik a mentésben
-                if (data.nodes) { nodes.length = 0; nodes.push(...data.nodes); }
-                if (data.walls) { walls.length = 0; walls.push(...data.walls); }
-                if (data.windows) { windows.length = 0; windows.push(...data.windows); }
-                if (data.doors) { doors.length = 0; doors.push(...data.doors); }
-                if (data.furnitures) { furnitures.length = 0; furnitures.push(...data.furnitures); }
+                if (data.floorPlans){
+                    floorPlans = data.floorPlans;
+                    currentFloor = data.currentFloor || 0; // Ha nincs megadva, alapértelmezett a 0
+                } else{
+                    floorPlans = [{
+                        nodes: data.nodes || [],
+                        walls: data.walls || [],
+                        windows: data.windows || [],
+                        doors: data.doors || [],
+                        furnitures: data.furnitures || [],
+                        historyStack: []
+                    }]
+                    currentFloor = 0;
+                }
+                const activeFloor = floorPlans[currentFloor];
                 
+                nodes.length = 0; if (activeFloor.nodes) nodes.push(...activeFloor.nodes);
+                walls.length = 0; if (activeFloor.walls) walls.push(...activeFloor.walls);
+                windows.length = 0; if (activeFloor.windows) windows.push(...activeFloor.windows);
+                doors.length = 0; if (activeFloor.doors) doors.push(...activeFloor.doors);
+                furnitures.length = 0; if (activeFloor.furnitures) furnitures.push(...activeFloor.furnitures);
+                historyStack.length = 0; // A múltat nem kell visszatölteni a vászonra
+
                 console.log("Floorplan successfully loaded!");
                 
-                //Várunk egy picit, hogy minden szkript betöltsön, majd rajzolunk
                 setTimeout(() => {
+                    if (typeof updateFloorIndicator === "function") updateFloorIndicator();
                     if (typeof draw === "function") draw();
                     if (typeof updateDataBar === "function") updateDataBar();
                 }, 100);
-            } else {
+            }
+            
+            else {
                 console.log("There is no saved plan.");
             }
         })

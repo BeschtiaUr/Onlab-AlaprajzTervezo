@@ -100,7 +100,7 @@ function undo() {
 
 function switchFloor(targetIndex) {
     // Biztonsági ellenőrzés: Létezik a kért emelet?
-    if (targetIndex < 0 || targetIndex >= floorPlans.length) return;
+    if (targetIndex < 0) return;
     if (targetIndex === currentFloor) return;
 
     // LÉPÉS 1: Elmentjük az aktuális vásznat a jelenlegi emelet memóriájába
@@ -112,12 +112,18 @@ function switchFloor(targetIndex) {
         furnitures: JSON.parse(JSON.stringify(furnitures)),
         historyStack: [...historyStack] // Az Undo memóriát is visszük!
     };
+    // LÉPÉS 2: Ha a cél emelet még nem létezik, létrehozzuk
+    while (targetIndex >= floorPlans.length) {
+        floorPlans.push({
+            nodes: [], walls: [], windows: [], doors: [], furnitures: [], historyStack: []
+        });
+    }
 
-    // LÉPÉS 2: Átváltunk az új emeletre
+    // LÉPÉS 3: Átváltunk az új emeletre
     currentFloor = targetIndex;
     const data = floorPlans[currentFloor];
 
-    // LÉPÉS 3: Kicsomagoljuk az új emelet adatait a globális tömbökbe
+    // LÉPÉS 4: Kicsomagoljuk az új emelet adatait a globális tömbökbe
     nodes.length = 0; nodes.push(...data.nodes);
     walls.length = 0; walls.push(...data.walls);
     windows.length = 0; windows.push(...data.windows);
@@ -125,14 +131,14 @@ function switchFloor(targetIndex) {
     furnitures.length = 0; furnitures.push(...data.furnitures);
     historyStack.length = 0; historyStack.push(...data.historyStack);
 
-    // LÉPÉS 4: Törlünk minden "éppen húzott" állapotot, hogy ne ragadjanak be
+    // LÉPÉS 5: Törlünk minden "éppen húzott" állapotot, hogy ne ragadjanak be
     isDrawing = false;
     currentStartNode = null;
     hoveredWallIndex = null;
     draggedWallIndex = null;
     cleanUpNodes();
 
-    // LÉPÉS 5: Frissítjük a UI-t és újrarajzoljuk a vásznat
+    // LÉPÉS 6: Frissítjük a UI-t és újrarajzoljuk a vásznat
     updateFloorIndicator();
     draw();
 }
